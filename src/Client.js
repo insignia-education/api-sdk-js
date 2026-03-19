@@ -19,13 +19,11 @@ export default class InsigniaClient {
     }
 
     #headers() {
-        const headers = { 'Content-Type': 'application/json' };
-        if (this.#token) headers['Authorization'] = `Bearer ${this.#token}`;
-        return headers;
+        return { 'Content-Type': 'application/json' };
     }
 
     async #request(method, path, body = null) {
-        const options = { method, headers: this.#headers() };
+        const options = { method, headers: this.#headers(), credentials: 'include' };
         if (body !== null) options.body = JSON.stringify(body);
         const response = await fetch(`${this.#baseUrl}${path}`, options);
         return response.json();
