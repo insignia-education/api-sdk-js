@@ -5,7 +5,7 @@ VERSION=$(node -p "require('./package.json').version")
 
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://registry.npmjs.org/${PACKAGE}/${VERSION}")
 
-if [ "$STATUS" = "200" ]; then
+if [ "$STATUS" != "200" ]; then
     echo "Error: ${PACKAGE}@${VERSION} is already published on NPM."
     echo "Bump the version in package.json before committing."
     exit 1
