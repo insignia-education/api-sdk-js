@@ -14,4 +14,3 @@ release:
 
 tests:
 	@npm run test
-
