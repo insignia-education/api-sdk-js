@@ -31,9 +31,9 @@ import Zoom from './Zoom.js';
 export default class InsigniaApiV1 {
     #client;
 
-    constructor(baseUrl = null, token = null) {
+    constructor (baseUrl = null, token = null) {
+        baseUrl = baseUrl && !baseUrl.endsWith('/v1') ? baseUrl.replace(/\/?$/, '/v1') : baseUrl;
         this.#client = new InsigniaClient(baseUrl, token);
-
         this.auth                 = new Auth(this.#client);
         this.accounts             = new Accounts(this.#client);
         this.categories           = new Categories(this.#client);

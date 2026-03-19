@@ -12,5 +12,8 @@ publish:
 release:
 	@bash scripts/release.sh
 
+update-sdk:
+	@bash scripts/update-sdk.sh
+
 tests:
 	@npm run test
