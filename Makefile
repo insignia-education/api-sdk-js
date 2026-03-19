@@ -1,6 +1,11 @@
-login: 
+install:
+	@cp .github/hooks/* .git/hooks/
+	@chmod +x .git/hooks/*
+	@echo "Hooks installed."
+
+login:
 	@npm login
-	
+
 publish:
 	@npm publish --access public
 
@@ -8,5 +13,5 @@ release:
 	@bash scripts/release.sh
 
 tests:
-	npm run test
+	@npm run test
 
