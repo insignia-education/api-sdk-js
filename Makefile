@@ -15,5 +15,5 @@ release:
 update-sdk:
 	@bash scripts/update-sdk.sh
 
-tests:
+test:
 	@npm run test

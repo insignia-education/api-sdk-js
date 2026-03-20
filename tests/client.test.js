@@ -100,29 +100,12 @@ describe('token management', () => {
         expect(client.getToken()).toBe('new-token');
     });
 
-    test('Authorization header is set when token is present', async () => {
+    test('Authorization header is never sent (cookie-based auth)', async () => {
         global.fetch = mockFetch();
-        const client = new InsigniaClient(null, 'bearer-token');
-        await client.get('/test');
-        const [, options] = global.fetch.mock.calls[0];
-        expect(options.headers['Authorization']).toBe('Bearer bearer-token');
-    });
-
-    test('Authorization header is absent when no token', async () => {
-        global.fetch = mockFetch();
-        const client = new InsigniaClient();
+        const client = new InsigniaClient(null, 'some-token');
         await client.get('/test');
         const [, options] = global.fetch.mock.calls[0];
         expect(options.headers['Authorization']).toBeUndefined();
-    });
-
-    test('Authorization header updates after setToken', async () => {
-        global.fetch = mockFetch();
-        const client = new InsigniaClient();
-        client.setToken('updated-token');
-        await client.get('/test');
-        const [, options] = global.fetch.mock.calls[0];
-        expect(options.headers['Authorization']).toBe('Bearer updated-token');
     });
 });
 
@@ -201,6 +184,12 @@ describe('HTTP methods', () => {
         await client.get('/path');
         const [, options] = global.fetch.mock.calls[0];
         expect(options.headers['Content-Type']).toBe('application/json');
+    });
+
+    test('credentials is always include', async () => {
+        await client.get('/path');
+        const [, options] = global.fetch.mock.calls[0];
+        expect(options.credentials).toBe('include');
     });
 
     test('returns parsed JSON from response', async () => {
