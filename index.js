@@ -1,4 +1,3 @@
-import InsigniaApiV1 from './src/v1/index.js';
+import Insignia from './src/index.js';
 
-export default InsigniaApiV1;
-export { InsigniaApiV1 };
+export default Insignia;

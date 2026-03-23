@@ -1,21 +1,8 @@
-import InsigniaClient from "./Client";
-import InsigniaApi from "./api";
+import InsigniaClient from './Client.js';
 
- 
-export default class Insignia {
-    #client;
+export default class Insignia extends InsigniaClient {
 
-    constructor(baseUrl = null, token = null) {
-        this.#client = new InsigniaClient(baseUrl, token);
-        this.api = new InsigniaApi(baseUrl, token);
-    }
-
-    setToken(token) {
-        this.#client.setToken(token);
-    }
-
-    getToken() {
-        return this.#client.getToken();
+    constructor(baseUrl = null) {
+        super(Insignia._resolve(baseUrl));
     }
 }
-

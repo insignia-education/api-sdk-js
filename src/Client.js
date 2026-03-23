@@ -1,21 +1,16 @@
 export default class InsigniaClient {
     #baseUrl;
-    #token;
 
-    constructor(baseUrl = null, token = null) {
-        const resolved = baseUrl
-            ?? process.env.INSIGNIA_EDUCATION_API_BASE_URL
-            ?? 'https://insigniaeducation.com';
-        this.#baseUrl = resolved.replace(/\/$/, '');
-        this.#token = token;
+    constructor(baseUrl) {
+        this.#baseUrl = InsigniaClient._resolve(baseUrl);
     }
 
-    setToken(token) {
-        this.#token = token;
-    }
-
-    getToken() {
-        return this.#token;
+    static _resolve(baseUrl) {
+        baseUrl = baseUrl 
+                    ?? process.env.INSIGNIA_EDUCATION_API_BASE_URL 
+                    ?? 'https://insigniaeducation.com';
+        baseUrl = baseUrl.replace(/\/$/, '')
+        return baseUrl;
     }
 
     #headers() {
@@ -26,12 +21,13 @@ export default class InsigniaClient {
         const options = { method, headers: this.#headers(), credentials: 'include' };
         if (body !== null) options.body = JSON.stringify(body);
         const response = await fetch(`${this.#baseUrl}${path}`, options);
-        return response.json();
+        const data = await response.json();
+        return data?.success ? data.response : data;
     }
 
-    get(path)              { return this.#request('GET',    path); }
-    post(path, body = null){ return this.#request('POST',   path, body); }
-    put(path, body = null) { return this.#request('PUT',    path, body); }
-    patch(path, body = null){ return this.#request('PATCH', path, body); }
-    del(path)              { return this.#request('DELETE', path); }
+    get(path)               { return this.#request('GET',    path); }
+    post(path, body = null) { return this.#request('POST',   path, body); }
+    put(path, body = null)  { return this.#request('PUT',    path, body); }
+    patch(path, body = null){ return this.#request('PATCH',  path, body); }
+    del(path)               { return this.#request('DELETE', path); }
 }

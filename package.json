@@ -10,7 +10,8 @@
     "./api/v1": "./src/api/v1/index.js"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint src/"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,8 @@
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "babel-jest": "^30.3.0",
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
     "jest": "^30.3.0",
     "jest-html-reporter": "^4.3.0"
   }

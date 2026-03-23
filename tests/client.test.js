@@ -81,34 +81,6 @@ describe('baseUrl resolution', () => {
     });
 });
 
-// ─── token management ────────────────────────────────────────────────────────
-
-describe('token management', () => {
-    test('getToken returns null by default', () => {
-        const client = new InsigniaClient();
-        expect(client.getToken()).toBeNull();
-    });
-
-    test('getToken returns token passed to constructor', () => {
-        const client = new InsigniaClient(null, 'my-token');
-        expect(client.getToken()).toBe('my-token');
-    });
-
-    test('setToken updates the token', () => {
-        const client = new InsigniaClient();
-        client.setToken('new-token');
-        expect(client.getToken()).toBe('new-token');
-    });
-
-    test('Authorization header is never sent (cookie-based auth)', async () => {
-        global.fetch = mockFetch();
-        const client = new InsigniaClient(null, 'some-token');
-        await client.get('/test');
-        const [, options] = global.fetch.mock.calls[0];
-        expect(options.headers['Authorization']).toBeUndefined();
-    });
-});
-
 // ─── HTTP methods ─────────────────────────────────────────────────────────────
 
 describe('HTTP methods', () => {
