@@ -18,11 +18,12 @@ jobs:
           node-version: 25
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
+      # - name: Install dependencies
+      #   run: npm install
+      
+      # we remove tests until we have a beta env for the api
+      # - name: Run tests
+      #   run: npm test
 
       - name: Publish to NPM
         run: npm publish --access public
