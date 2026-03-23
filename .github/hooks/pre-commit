@@ -12,6 +12,7 @@ npm test
 
 echo "Checking if ${PACKAGE}@${VERSION} is already published..."
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://registry.npmjs.org/${PACKAGE}/${VERSION}")
+echo $STATUS
 if [ "$STATUS" = "200" ]; then
     echo "Error: ${PACKAGE}@${VERSION} is already published on NPM."
     echo "Bump the version in package.json before committing."
