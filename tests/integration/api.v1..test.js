@@ -74,3 +74,19 @@ describe('Languages', () => {
     });
 });
 
+
+
+describe('Auth', () => {
+    test('get() returns a list', async () => {
+        const res = await api.auth.login({
+            email: process.env.TEST_EMAIL,
+            password: process.env.TEST_PASSWORD
+        })
+        .then(response => {
+    
+            expect(response["success"]).toBeDefined();
+            expect(response["success"]).toBe("ok");
+        });
+    });
+});
+

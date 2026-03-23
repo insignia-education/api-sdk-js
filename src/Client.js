@@ -6,10 +6,12 @@ export default class InsigniaClient {
     }
 
     static _resolve(baseUrl) {
-        baseUrl = baseUrl 
-                    ?? process.env.INSIGNIA_EDUCATION_API_BASE_URL 
-                    ?? 'https://insigniaeducation.com';
-        baseUrl = baseUrl.replace(/\/$/, '')
+        const envBaseUrl = typeof process !== 'undefined'
+            ? process.env?.INSIGNIA_EDUCATION_API_BASE_URL ?? null
+            : null;
+
+        baseUrl = baseUrl ?? envBaseUrl ?? 'https://insigniaeducation.com';
+        baseUrl = baseUrl.replace(/\/$/, '');
         return baseUrl;
     }
 
