@@ -29,10 +29,14 @@ import Users from './Users.js';
 import Zoom from './Zoom.js';
 
 export default class InsigniaApiV1 extends InsigniaApi {
+
+    static _resolve(baseUrl) {
+        baseUrl = InsigniaApi._resolve(baseUrl);
+        baseUrl += !/\/v1(\/|$)/.test(baseUrl) ? '/v1' : '';
+        return baseUrl;
+    }
     constructor(baseUrl = null) {
         let url = InsigniaApiV1._resolve(baseUrl);
-        if (!/\/api(\/|$)/.test(url)) url += '/api';
-        if (!/\/v1(\/|$)/.test(url)) url += '/v1';
         super(url);
 
         this.auth                 = new Auth(this);
