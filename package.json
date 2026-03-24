@@ -1,6 +1,6 @@
 {
   "name": "@insignia-education/api-sdk-js",
-  "version": "0.9.19",
+  "version": "0.9.20",
   "description": "JavaScript SDK for the Insignia Education API",
   "main": "index.js",
   "type": "module",

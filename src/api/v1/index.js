@@ -17,6 +17,7 @@ import Insignias from './Insignias.js';
 import Languages from './Languages.js';
 import MailBlacklist from './MailBlacklist.js';
 import Organizations from './Organizations.js';
+import PaymentMethods from './PaymentMethods.js';
 import Quizzes from './Quizzes.js';
 import ShortLinks from './ShortLinks.js';
 import Surveys from './Surveys.js';
@@ -57,6 +58,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.languages            = new Languages(this);
         this.mailBlacklist        = new MailBlacklist(this);
         this.organizations        = new Organizations(this);
+        this.paymentMethods       = new PaymentMethods(this);
         this.quizzes              = new Quizzes(this);
         this.shortLinks           = new ShortLinks(this);
         this.surveys              = new Surveys(this);
