@@ -5,7 +5,8 @@ export default class Users {
         this.#client = client;
     }
 
-    get(id = null)  { return id ? this.#client.get(`/users/${id}`) : this.#client.get('/users'); }
+    get(id = null)      { return id ? this.#client.get(`/users/${id}`) : this.#client.get('/users'); }
+    cashReceivers()     { return this.#client.get('/users/cash-receivers'); }
     edit(id, data)  { return this.#client.patch(`/users/${id}`, data); }
 
     #nested(userId, path) {
