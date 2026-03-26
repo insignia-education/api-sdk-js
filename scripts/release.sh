@@ -14,8 +14,11 @@ REPO=$(echo "${REMOTE}" | sed 's/.*github\.com[:/]\(.*\)\.git/\1/' | sed 's/.*gi
 
 echo "Releasing ${TAG} for ${REPO}..."
 
+read -rp "Commit message (leave empty to use 'Release ${TAG}'): " COMMIT_MSG
+COMMIT_MSG="${COMMIT_MSG:-Release ${TAG}}"
+
 git add .
-git commit -m "Release ${TAG}"
+git commit -m "${COMMIT_MSG}"
 git push origin master
 
 curl -s -X POST \

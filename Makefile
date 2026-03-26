@@ -29,9 +29,6 @@ publish:
 release:
 	@make install
 	@bash scripts/release.sh
-	@echo "in 60 seconds will update this package in all our package.json"
-	@sleep 60
-	@bash scripts/update-sdk.sh
 
 update-sdk:
 	@bash scripts/update-sdk.sh

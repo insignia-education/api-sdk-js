@@ -236,8 +236,11 @@ describe('Courses', () => {
     let c, r;
     beforeEach(() => { c = mockClient(); r = new Courses(c); });
 
-    test('get all',   () => { r.get();       expect(c.get).toHaveBeenCalledWith('/courses'); });
-    test('get by id', () => { r.get(1);      expect(c.get).toHaveBeenCalledWith('/courses/1'); });
+    test('get all',              () => { r.get();                                 expect(c.get).toHaveBeenCalledWith('/courses'); });
+    test('get all with page',    () => { r.get(null, { page: 2 });               expect(c.get).toHaveBeenCalledWith('/courses?page=2'); });
+    test('get all with perPage', () => { r.get(null, { perPage: 25 });           expect(c.get).toHaveBeenCalledWith('/courses?per_page=25'); });
+    test('get all with both',    () => { r.get(null, { page: 2, perPage: 25 }); expect(c.get).toHaveBeenCalledWith('/courses?page=2&per_page=25'); });
+    test('get by id',            () => { r.get(1);                               expect(c.get).toHaveBeenCalledWith('/courses/1'); });
     test('create',    () => { r.create({});  expect(c.put).toHaveBeenCalledWith('/courses', {}); });
     test('edit',      () => { r.edit(1, {}); expect(c.patch).toHaveBeenCalledWith('/courses/1', {}); });
     test('delete',    () => { r.delete(1);   expect(c.del).toHaveBeenCalledWith('/courses/1'); });

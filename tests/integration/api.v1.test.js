@@ -123,3 +123,16 @@ describe('PaymentMethods', () => {
     });
 });
 
+describe('users/cash-receivers', () => {
+    test('get By currency id() returns a list', async () => {
+        await api.users.cashReceivers()
+            .then(response => {
+                expect(response.length > 0).toBe(true);
+                response.forEach(user => {
+                    expect(user["id"]).toBeDefined();
+                    expect(user["name"]).toBeDefined();
+                })
+            })
+    });
+});
+

@@ -5,7 +5,14 @@ export default class Courses {
         this.#client = client;
     }
 
-    get(id = null)  { return id ? this.#client.get(`/courses/${id}`) : this.#client.get('/courses'); }
+    get(id = null, { page = null, perPage = null } = {}) {
+        if (id) return this.#client.get(`/courses/${id}`);
+        const params = new URLSearchParams();
+        if (page)    params.set('page', page);
+        if (perPage) params.set('per_page', perPage);
+        const qs = params.toString();
+        return this.#client.get(qs ? `/courses?${qs}` : '/courses');
+    }
     create(data)    { return this.#client.put('/courses', data); }
     edit(id, data)  { return this.#client.patch(`/courses/${id}`, data); }
     delete(id)      { return this.#client.del(`/courses/${id}`); }
