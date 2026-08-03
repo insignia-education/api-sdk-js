@@ -311,15 +311,6 @@ await v1.surveys.questions(1).get();
 await v1.surveys.questions(1).answers(2).get();
 ```
 
-### Tags
-
-```js
-await v1.tags.get();
-await v1.tags.create(data);
-await v1.tags.edit(1, data);
-await v1.tags.delete(1);
-```
-
 ### Taxes
 
 ```js
@@ -409,11 +400,6 @@ await v1.users.pushEndpoints(1).delete(2);
 ```js
 await v1.zoom.meetings().get();
 await v1.zoom.meetings().get(1);
-
-await v1.zoom.tokens().get();
-await v1.zoom.tokens().create(data);
-await v1.zoom.tokens().edit(1, data);
-await v1.zoom.tokens().delete(1);
 ```
 
 ---

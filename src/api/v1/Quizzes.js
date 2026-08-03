@@ -5,7 +5,18 @@ export default class Quizzes {
         this.#client = client;
     }
 
-    get(id = null)  { return id ? this.#client.get(`/quizzes/${id}`) : this.#client.get('/quizzes'); }
+    /**
+     * With no id: full unpaginated list by default (used by course/coupon/offer
+     * pickers). Pass search/page/perPage to get a paginated + searchable page
+     * instead (used by the admin Quizzes list).
+     */
+    get(id = null, { search = null, page = null, perPage = null } = {}) {
+        if (id) return this.#client.get(`/quizzes/${id}`);
+        if (search != null || page != null || perPage != null) {
+            return this.#client.get('/quizzes', { search, page, per_page: perPage ?? 15 });
+        }
+        return this.#client.get('/quizzes');
+    }
     create(data)    { return this.#client.put('/quizzes', data); }
     edit(id, data)  { return this.#client.patch(`/quizzes/${id}`, data); }
     delete(id)      { return this.#client.del(`/quizzes/${id}`); }

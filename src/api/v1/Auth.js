@@ -5,11 +5,20 @@ export default class Auth {
         this.#client = client;
     }
 
-    loginOrRegister(email)      { return this.#client.get(`/auth/login-register-check?email=${encodeURIComponent(email)}`); }
+    loginOrRegister(email, captcha_token) { return this.#client.get(`/auth/login-register-check?email=${encodeURIComponent(email)}&captcha_token=${encodeURIComponent(captcha_token)}`); }
     register(data)              { return this.#client.put('/auth/register', data); }
+    /** May resolve to { two_factor_required: true } — then call twoFactor({ pin }). */
     login(data)                 { return this.#client.post('/auth/login', data); }
     googleLogin(data)           { return this.#client.post('/auth/google', data); }
     refresh()                   { return this.#client.post('/auth/refresh'); }
     logout()                    { return this.#client.post('/auth/logout'); }
     user()                      { return this.#client.get('/auth/user'); }
+    forgotPassword(email, captcha_token) { return this.#client.post('/auth/forgot-password', { email, captcha_token }); }
+    resetPassword(data)         { return this.#client.post('/auth/reset-password', data); }
+    magicLinkSend(email)        { return this.#client.post('/auth/magic-link/send', { email }); }
+    magicLinkVerify(data)       { return this.#client.post('/auth/magic-link/verify', data); }
+    facebookLogin(data)         { return this.#client.post('/auth/facebook', data); }
+    emailVerify(data)           { return this.#client.post('/auth/email-verify', data); }
+    /** Second login step when two_factor_required: exchange { pin } for a session. */
+    twoFactor(data)             { return this.#client.post('/auth/2fa', data); }
 }

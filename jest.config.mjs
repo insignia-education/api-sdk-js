@@ -4,6 +4,16 @@ const config = {
     coverageDirectory: 'coverage',
     coverageProvider: 'v8',
 
+    reporters: [
+        'default',
+        ['jest-html-reporter', {
+            outputPath: 'coverage/test-report.html',
+            pageTitle: 'API SDK Test Report',
+            includeFailureMsg: true,
+            includeConsoleLog: true,
+        }],
+    ],
+
     projects: [
         {
             displayName: 'unit',

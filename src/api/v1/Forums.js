@@ -6,6 +6,9 @@ export default class Forums {
     }
 
     get(id = null)  { return id ? this.#client.get(`/forums/${id}`) : this.#client.get('/forums'); }
+    forLesson({ course_id, course_level_id, course_level_lesson_id }) {
+        return this.#client.get('/forums/for-lesson', { course_id, course_level_id, course_level_lesson_id });
+    }
     create(data)    { return this.#client.put('/forums', data); }
     edit(id, data)  { return this.#client.patch(`/forums/${id}`, data); }
     delete(id)      { return this.#client.del(`/forums/${id}`); }
@@ -19,6 +22,9 @@ export default class Forums {
             edit:    (id, data)  => this.#client.patch(`${base}/${id}`, data),
             delete:  (id)        => this.#client.del(`${base}/${id}`),
             approve: (id)        => this.#client.post(`${base}/${id}/approve`),
+            reject:  (id)        => this.#client.post(`${base}/${id}/reject`),
+            like:    (id)        => this.#client.post(`${base}/${id}/like`),
+            dislike: (id)        => this.#client.post(`${base}/${id}/dislike`),
         };
     }
 }

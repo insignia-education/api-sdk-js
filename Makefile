@@ -14,6 +14,7 @@ lint:
 
 test:
 	@$(NVM) nvm use $(NODE_VERSION) && npm run test
+	@open coverage/test-report.html
 
 login:
 	@$(NVM) nvm use $(NODE_VERSION) && npm login
@@ -22,9 +23,8 @@ precommit:
 	@$(NVM) nvm use $(NODE_VERSION) && npm run lint && npm run test
 
 publish:
-	@make precommit
-	@make login
-	@npm publish --access public
+# 	@make precommit
+	@$(NVM) nvm use $(NODE_VERSION) && (npm whoami 2>/dev/null || npm login) && npm publish --access public
 
 release:
 	@make install

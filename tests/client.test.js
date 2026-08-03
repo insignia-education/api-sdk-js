@@ -3,7 +3,7 @@ import InsigniaClient from '../src/Client.js';
 const BASE = 'http://localhost:8000';
 
 function mockFetch(json = {}) {
-    return jest.fn().mockResolvedValue({ json: () => Promise.resolve(json) });
+    return jest.fn().mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve(json) });
 }
 
 beforeEach(() => {
@@ -79,6 +79,19 @@ describe('baseUrl resolution', () => {
             expect.any(Object)
         );
     });
+
+    test('falls back to default when process is undefined', async () => {
+        const saved = global.process;
+        global.process = undefined;
+        global.fetch = mockFetch();
+        const client = new InsigniaClient(null);
+        await client.get('/test');
+        expect(global.fetch).toHaveBeenCalledWith(
+            'https://insigniaeducation.com/test',
+            expect.any(Object)
+        );
+        global.process = saved;
+    });
 });
 
 // ─── HTTP methods ─────────────────────────────────────────────────────────────
@@ -87,7 +100,7 @@ describe('HTTP methods', () => {
     let client;
 
     beforeEach(() => {
-        global.fetch = mockFetch({ ok: true });
+        global.fetch = mockFetch();
         client = new InsigniaClient(BASE);
     });
 
@@ -152,9 +165,10 @@ describe('HTTP methods', () => {
         expect(options.body).toBeUndefined();
     });
 
-    test('Content-Type is always application/json', async () => {
+    test('JSON headers are always sent', async () => {
         await client.get('/path');
         const [, options] = global.fetch.mock.calls[0];
+        expect(options.headers.Accept).toBe('application/json');
         expect(options.headers['Content-Type']).toBe('application/json');
     });
 
@@ -164,12 +178,71 @@ describe('HTTP methods', () => {
         expect(options.credentials).toBe('include');
     });
 
+    test('stores response cookies and sends them on later requests in Node', async () => {
+        global.fetch = jest.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                headers: {
+                    getSetCookie: () => ['token=abc123; Path=/; HttpOnly; Secure; SameSite=Lax'],
+                },
+                json: () => Promise.resolve({ success: 'ok' }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                status: 200,
+                json: () => Promise.resolve({ id: 1, title: 'test' }),
+            });
+        client = new InsigniaClient(BASE);
+
+        await client.post('/auth/login', { email: 'admin@example.com', password: 'secret' });
+        await client.get('/accounts');
+
+        const [, options] = global.fetch.mock.calls[1];
+        expect(options.headers.Cookie).toBe('token=abc123');
+    });
+
     test('returns parsed JSON from response', async () => {
         global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
             json: () => Promise.resolve({ id: 1, name: 'test' }),
         });
         client = new InsigniaClient(BASE);
         const result = await client.get('/path');
         expect(result).toEqual({ id: 1, name: 'test' });
+    });
+
+    test('returns null for empty response text', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
+            text: () => Promise.resolve(''),
+        });
+        client = new InsigniaClient(BASE);
+        const result = await client.get('/path');
+        expect(result).toBeNull();
+    });
+
+    test('returns null for no-content responses', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            status: 204,
+            json: jest.fn(),
+        });
+        client = new InsigniaClient(BASE);
+        const result = await client.del('/path');
+        expect(result).toBeNull();
+    });
+
+    test('returns null when json parsing fails because the response is empty', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: () => Promise.reject(new SyntaxError('Unexpected end of JSON input')),
+        });
+        client = new InsigniaClient(BASE);
+        const result = await client.get('/path');
+        expect(result).toBeNull();
     });
 });

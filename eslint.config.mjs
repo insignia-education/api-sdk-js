@@ -16,4 +16,14 @@ export default [
             "no-console": "warn",
         },
     },
+    {
+        files: ["tests/**/*.js"],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+                ...globals.jest,
+                fetch: "readonly",
+            },
+        },
+    },
 ];
