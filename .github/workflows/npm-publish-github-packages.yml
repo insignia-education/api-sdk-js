@@ -7,7 +7,7 @@ on:
 
 permissions:
   id-token: write  # Required for OIDC
-  contents: read
+  contents: write  # Required to commit the version bump back to master
 
 jobs:
   publish:
@@ -23,4 +23,16 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       # npm test disabled: integration suite needs a live api backend, no CI service for it yet
+
+      - run: npm version patch --no-git-tag-version
+
+      # Pushing with GITHUB_TOKEN doesn't retrigger this workflow, so no [skip ci] loop risk.
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
+          git push
+
       - run: npm publish  # Or: npm stage publish
