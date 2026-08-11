@@ -1,114 +1,26 @@
-name: Bump version, publish, and sync front
+name: Publish Package
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
 
 jobs:
-  bump-and-publish:
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+  publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      version: ${{ steps.bump.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 25
-          registry-url: 'https://registry.npmjs.org/'
-
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump patch version
-        id: bump
-        run: |
-          NEW_VERSION=$(npm version patch -m "chore: release v%s [skip ci]")
-          echo "version=${NEW_VERSION#v}" >> "$GITHUB_OUTPUT"
-
-      - name: Push version bump
-        run: git push origin HEAD:master --follow-tags
-
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  sync-front:
-    needs: bump-and-publish
-    runs-on: ubuntu-latest
-    env:
-      SDK_VERSION: ${{ needs.bump-and-publish.outputs.version }}
-    steps:
-      - name: Wait for npm registry propagation
-        run: sleep 15
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      # ---- beta: direct commit + push ----
-      - name: Checkout front (beta)
-        uses: actions/checkout@v4
-        with:
-          repository: insignia-education/front
-          ref: beta
-          token: ${{ secrets.FRONT_REPO_PAT }}
-          path: front-beta
-
-      - name: Bump SDK in front (beta)
-        working-directory: front-beta
-        run: npm install "@insignia-education/api-sdk-js@${SDK_VERSION}"
-
-      - name: Commit and push (beta)
-        working-directory: front-beta
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
-          if git diff --cached --quiet; then
-            echo "No changes, skipping"
-          else
-            git commit -m "chore: bump @insignia-education/api-sdk-js to ${SDK_VERSION}"
-            git push origin beta
-          fi
-
-      # ---- master: open a PR for review ----
-      - name: Checkout front (master)
-        uses: actions/checkout@v4
-        with:
-          repository: insignia-education/front
-          ref: master
-          token: ${{ secrets.FRONT_REPO_PAT }}
-          path: front-master
-
-      - name: Bump SDK in front (master branch)
-        working-directory: front-master
-        run: npm install "@insignia-education/api-sdk-js@${SDK_VERSION}"
-
-      - name: Open PR against master
-        working-directory: front-master
-        env:
-          GH_TOKEN: ${{ secrets.FRONT_REPO_PAT }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet; then
-            echo "No changes, skipping PR"
-            exit 0
-          fi
-          BRANCH="chore/bump-api-sdk-js-${SDK_VERSION}"
-          git checkout -b "$BRANCH"
-          git add package.json package-lock.json
-          git commit -m "chore: bump @insignia-education/api-sdk-js to ${SDK_VERSION}"
-          git push origin "$BRANCH"
-          gh pr create --repo insignia-education/front --base master --head "$BRANCH" \
-            --title "chore: bump @insignia-education/api-sdk-js to ${SDK_VERSION}" \
-            --body "Automated dependency bump triggered by insignia-education/api-sdk-js@${SDK_VERSION}."
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false  # never use caching in release builds
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+      - run: npm publish  # Or: npm stage publish
