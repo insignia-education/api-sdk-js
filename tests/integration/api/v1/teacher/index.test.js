@@ -38,7 +38,7 @@ describe('api/v1/teacher/config-sets', () => {
 
 describe('api/v1/teacher/configs', () => {
     test('get | authenticated', async () => {
-        await login();
+        await loginAdmin();
         await api.teacher.configs().get()
             .then(response => {
                 response = Object.values(response);

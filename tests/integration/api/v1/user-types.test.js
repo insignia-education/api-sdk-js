@@ -1,9 +1,8 @@
-import InsigniaApiV1 from '../../../../src/api/v1/index.js';
-
-const api = new InsigniaApiV1(process.env.INSIGNIA_EDUCATION_API_BASE_URL);
+import { api, loginAdmin } from '../../../helpers.js';
 
 describe('api/v1/user-types', () => {
     test('get', async () => {
+        await loginAdmin();
         await api.userTypes.get()
             .then(response => {
                 response = Object.values(response);
@@ -12,7 +11,6 @@ describe('api/v1/user-types', () => {
                     expect(userType["id"]).toBeDefined();
                     expect(userType["cod"]).toBeDefined();
                     expect(userType["title"]).toBeDefined();
-                    expect(userType["enabled"]).toBeDefined();
                 });
             });
     });

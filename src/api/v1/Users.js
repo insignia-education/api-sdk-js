@@ -47,8 +47,50 @@ export default class Users {
         };
     }
     courseNotes(userId)    { return this.#nested(userId, 'course-notes'); }
-    quizzes(userId)        { return this.#nested(userId, 'quizzes'); }
-    sessions(userId)       { return this.#nested(userId, 'sessions'); }
+
+    /** get() accepts optional { courseId, withTrashed } filters — withTrashed also returns soft-deleted attempts. */
+    quizzes(userId) {
+        const base = `/users/${userId}/quizzes`;
+        const client = this.#client;
+        return {
+            get: (id = null, { courseId, withTrashed } = {}) => id
+                ? client.get(`${base}/${id}`)
+                : client.get(base, { course_id: courseId, with_trashed: withTrashed ? 1 : undefined }),
+            create: (data)      => client.put(base, data),
+            edit:   (id, data)  => client.patch(`${base}/${id}`, data),
+            delete: (id)        => client.del(`${base}/${id}`),
+            /** Puts a soft-deleted attempt back. */
+            restore: (id)       => client.post(`${base}/${id}/restore`),
+            /**
+             * Upload the file a student attaches as their answer to a
+             * document_upload (PDF) or audio_answer (recording) question
+             * (formData must contain `file`) — the kind is derived server-side
+             * from the question's own flags. The server derives the storage
+             * path/filename — nothing else to pass.
+             */
+            uploadQuestionFile: (quizId, questionId, formData) =>
+                client.upload(`${base}/${quizId}/questions/${questionId}/file`, formData),
+        };
+    }
+
+    /** get() accepts an optional { courseId } filter to narrow to a single course. */
+    sessions(userId) {
+        const base = `/users/${userId}/sessions`;
+        const client = this.#client;
+        return {
+            get:    (id = null, { courseId } = {}) => id ? client.get(`${base}/${id}`) : client.get(courseId ? `${base}?course_id=${courseId}` : base),
+            create: (data)      => client.put(base, data),
+            edit:   (id, data)  => client.patch(`${base}/${id}`, data),
+            delete: (id)        => client.del(`${base}/${id}`),
+            /**
+             * Individual sessions only: clears teacher/course/date/time/meeting info
+             * so the slot can be rebooked. The owner may reset up to 1h before the
+             * session starts; a seller-and-above may reset any time.
+             */
+            reset:  (id)        => client.post(`${base}/${id}/reset`),
+        };
+    }
+
     surveys(userId)        { return this.#nested(userId, 'surveys'); }
     cart(userId)           { return this.#nested(userId, 'cart'); }
 
@@ -168,6 +210,18 @@ export default class Users {
             markUploaded: (type) => client.patch(`${base}/${type}`),
             approve: () => client.post(`${base}/approve`),
             reject: () => client.post(`${base}/reject`),
+        };
+    }
+
+    /** Verified Telegram account linking for this user. Owner or staff only. */
+    telegram(userId) {
+        const base = `/users/${userId}/telegram`;
+        const client = this.#client;
+        return {
+            /** Mints a { hash, link, expires_at } deep link — tapping it in Telegram links this user's chat_id via the bot webhook. */
+            linkToken: () => client.post(`${base}/link-token`),
+            /** Fallback flow: completes a link the bot proposed after an organic (no-payload) /start, given the { chat_id, username, expires_at, signature } it replied with. */
+            connect: (data) => client.post(`${base}/connect`, data),
         };
     }
 }

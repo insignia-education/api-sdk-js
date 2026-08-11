@@ -1,21 +1,24 @@
 import { Blob } from 'buffer';
-import InsigniaApiV1 from '../../../../src/api/v1/index.js';
+import { api, loginAdmin } from '../../../helpers.js';
 
-const api = new InsigniaApiV1(process.env.INSIGNIA_EDUCATION_API_BASE_URL);
-
-const login = () => api.auth.login({
-    email: process.env.TEST_EMAIL,
-    password: process.env.TEST_PASSWORD,
-});
+// A real 1x1 transparent PNG (67 bytes) — the upload endpoint sniffs actual
+// file content, not just the claimed Content-Type, so arbitrary text with an
+// 'image/png' MIME hint gets rejected with "Unsupported file type".
+const PNG_1X1 = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+    'base64'
+);
 
 describe('api/v1/files', () => {
-    test('get | authenticated', async () => {
-        await login();
-        await api.files.get()
+    // list() (paginated), not get() — get(id) requires an id and hits
+    // /files/{id}, unlike most other resources' get(id = null).
+    test('list | authenticated', async () => {
+        await loginAdmin();
+        await api.files.list()
             .then(response => {
-                response = Object.values(response);
-                expect(Array.isArray(response)).toBe(true);
-                response.forEach(file => {
+                const files = response["data"];
+                expect(Array.isArray(files)).toBe(true);
+                files.forEach(file => {
                     expect(file["id"]).toBeDefined();
                     expect(file["created_at"]).toBeDefined();
                     expect(file["updated_at"]).toBeDefined();
@@ -24,8 +27,8 @@ describe('api/v1/files', () => {
     });
 
     test('upload | authenticated', async () => {
-        await login();
-        const blob = new Blob(['test'], { type: 'image/png' });
+        await loginAdmin();
+        const blob = new Blob([PNG_1X1], { type: 'image/png' });
         const fd   = new FormData();
         fd.append('file', blob, 'test.png');
         fd.append('type', 'uploads');

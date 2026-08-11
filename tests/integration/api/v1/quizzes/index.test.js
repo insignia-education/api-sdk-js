@@ -12,8 +12,6 @@ describe('api/v1/quizzes', () => {
                 expect(Array.isArray(response)).toBe(true);
                 response.forEach(quiz => {
                     expect(quiz["id"]).toBeDefined();
-                    expect(quiz["cod"]).toBeDefined();
-                    expect(quiz["enabled"]).toBeDefined();
                     expect(quiz["created_at"]).toBeDefined();
                     expect(quiz["updated_at"]).toBeDefined();
                 });

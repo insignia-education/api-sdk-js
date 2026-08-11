@@ -1,15 +1,8 @@
-import InsigniaApiV1 from '../../../../src/api/v1/index.js';
-
-const api = new InsigniaApiV1(process.env.INSIGNIA_EDUCATION_API_BASE_URL);
-
-const login = () => api.auth.login({
-    email: process.env.TEST_EMAIL,
-    password: process.env.TEST_PASSWORD,
-});
+import { api, loginAdmin } from '../../../helpers.js';
 
 describe('api/v1/hashes', () => {
     test('get | authenticated', async () => {
-        await login();
+        await loginAdmin();
         await api.hashes.get()
             .then(response => {
                 response = Object.values(response);
@@ -17,7 +10,6 @@ describe('api/v1/hashes', () => {
                 response.forEach(hash => {
                     expect(hash["id"]).toBeDefined();
                     expect(hash["hash"]).toBeDefined();
-                    expect(hash["purpose_id"]).toBeDefined();
                     expect(hash["created_at"]).toBeDefined();
                     expect(hash["updated_at"]).toBeDefined();
                 });

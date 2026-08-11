@@ -1,6 +1,6 @@
 import {
     api,
-    loginCustomer,
+    loginAdmin,
     logout,
 } from '../../../helpers.js';
 
@@ -17,7 +17,7 @@ describe('api/v1/organizations', () => {
     });
 
     test('create | employee-and-above', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const response = await api.organizations.create({ nice_name: 'SDK Test Org' });
         expect(response["id"]).toBeDefined();
         expect(response["nice_name"]).toBe('SDK Test Org');
@@ -25,7 +25,7 @@ describe('api/v1/organizations', () => {
     });
 
     test('get(id) | shape', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const created = await api.organizations.create({ nice_name: 'SDK Test Org 2' });
         const response = await api.organizations.get(created.id);
         expect(response["id"]).toBe(created.id);
@@ -38,28 +38,28 @@ describe('api/v1/organizations', () => {
     });
 
     test('edit', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const created = await api.organizations.create({ nice_name: 'SDK Test Org 3' });
         const response = await api.organizations.edit(created.id, { nice_name: 'SDK Test Org 3 Edited' });
         expect(response["nice_name"]).toBe('SDK Test Org 3 Edited');
     });
 
     test('members(id).get() | empty for a freshly created organization', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const created = await api.organizations.create({ nice_name: 'SDK Test Org 4' });
         const response = await api.organizations.members(created.id).get();
         expect(Object.values(response)).toEqual([]);
     });
 
     test('members(id).courses(userId) | rejects a non-member user_id', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const created = await api.organizations.create({ nice_name: 'SDK Test Org 5' });
         await expect(api.organizations.members(created.id).courses(created.user_id))
             .rejects.toMatchObject({ status: 422 });
     });
 
     test('members(id).createPayment(userId, data) | reaches validation, not the OwnerOrStaff 403', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const created = await api.organizations.create({ nice_name: 'SDK Test Org 6' });
         // Empty payload — asserts the route/method wiring bypasses OwnerOrStaff and lands
         // in UserPaymentCreateRequest validation (422), never a 403.
@@ -77,7 +77,7 @@ describe('api/v1/users/organization-owners', () => {
     });
 
     test('get | employee-and-above', async () => {
-        await loginCustomer();
+        await loginAdmin();
         const response = Object.values(await api.users.organizationOwners());
         expect(Array.isArray(response)).toBe(true);
         response.forEach(user => {

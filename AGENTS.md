@@ -87,11 +87,25 @@ The SDK is language-neutral — it must never contain human-readable strings.
 - Removed endpoint → remove or deprecate the corresponding SDK method
 - Never leave the SDK behind the API; the `front` repo relies solely on this SDK
 
+## Consumption — never symlink
+
+Consumers (`front`, `api`) must install this package the normal npm way — **never** via a symlink
+(`npm link`, a manual `ln -s` into a consumer's `node_modules`, etc.), even for local iteration.
+
+- A symlinked package looks like it works, but an `npm install`/`npm ci` in the consumer repo can
+  silently replace the link with a stale registry copy — the consumer keeps running old SDK code
+  with no error, and edits stop propagating until someone notices at runtime.
+- Instead: bump this package's version (`npm version patch|minor`) and have the human publish it
+  (`npm publish`), then bump the version range in the consumer's `package.json` and run
+  `npm install` there.
+- Never publish on your own initiative — publishing is a human action.
+
 ## Never do
 - Don't add runtime dependencies
 - Don't change the constructor signature of `InsigniaApiV1`
 - Don't hardcode API base URLs — always receive from constructor
 - Don't let the SDK lag behind `api` — update both in the same task
+- Don't symlink this package into a consumer's `node_modules` — publish it instead
 
 
 ---

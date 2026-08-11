@@ -10,8 +10,8 @@ export default class Employee {
         return {
             /** All teachers' sessions for a given date (YYYY-MM-DD). */
             sessions: (date) => this.#client.get(`${base}/sessions`, { date }),
-            /** All teachers' individual sessions for the 7-day window starting at `start` (YYYY-MM-DD, Monday). */
-            weekSessions: (start) => this.#client.get(`${base}/sessions/week`, { start }),
+            /** Every teacher's recurring weekly availability for individual sessions (day-of-week templates, not booked dates). */
+            individualAvailability: () => this.#client.get(`${base}/teachers/individual-availability`),
             /** All sessions for one course_date, any teacher. */
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
             /** Mark a student's attendance on any teacher's session. */

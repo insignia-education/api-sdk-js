@@ -56,10 +56,20 @@ export default class Teacher {
             courseDateContentDownload: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/content-download`),
             /** Ungraded quiz submissions from one CourseDate's own students. */
             courseDateUngradedQuizzes: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/ungraded`),
+            /** Already-graded quiz submissions from one CourseDate's own students, optionally narrowed to one quiz. */
+            courseDateGradedQuizzes: (courseDateId, quizId = null) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
+            /** Distinct { id, title } quizzes needing correction under this CourseDate's course — for the graded-tab quiz filter. */
+            courseDateCorrectableQuizzes: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/correctable`),
             /** Ungraded quiz submissions grouped by course, for every course this teacher teaches. */
             ungradedQuizzes: () => this.#client.get(`${base}/quizzes/ungraded`),
+            /** Full attempt detail (all score fields, answers, quiz.questions.answers eager-loaded) for one of this teacher's own students. */
+            quizDetail: (id) => this.#client.get(`${base}/quizzes/${id}`),
+            /** Grade (or partially grade) an attempt: any field omitted keeps its current value, so open/audio/session can be saved independently of finalizing (teacher_graded_at). */
+            gradeQuiz: (id, data) => this.#client.patch(`${base}/quizzes/${id}/grade`, data),
             /** Mark one student's attendance (present: true/false) on one of this teacher's own sessions. */
             markAttendance: (sessionId, studentId, present) => this.#client.patch(`${base}/sessions/${sessionId}/attendance`, { student_id: studentId, present }),
+            /** Mark the teacher's own presence (present: true/false) on one of their own sessions. */
+            markTeacherPresent: (sessionId, present) => this.#client.patch(`${base}/sessions/${sessionId}/teacher-present`, { present }),
             /** Attendance/substitution totals. Pass { from, to } (YYYY-MM-DD) to filter, omit for all-time. */
             stats: ({ from, to } = {}) => this.#client.get(`${base}/stats`, { from, to }),
             /** Pay owed for sessions taught (teacher_present = 1), per course. Pass { from, to } (YYYY-MM-DD) to filter, omit for all-time. */

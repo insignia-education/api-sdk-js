@@ -16,4 +16,15 @@ export default class Coupons {
 
     /** Employee/sales-only: usage stats + full redemption history for one coupon. */
     stats(id) { return this.#client.get(`/coupons/${id}/stats`); }
+
+    /** Users explicitly granted access to redeem this coupon. */
+    users(id) {
+        const base = `/coupons/${id}/users`;
+        const client = this.#client;
+        return {
+            get:    ()                 => client.get(base),
+            add:    ({ email, reason }) => client.put(base, { email, reason }),
+            remove: (userId)           => client.del(`${base}/${userId}`),
+        };
+    }
 }

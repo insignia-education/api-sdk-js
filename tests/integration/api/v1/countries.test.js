@@ -5,7 +5,7 @@ const api = new InsigniaApiV1(process.env.INSIGNIA_EDUCATION_API_BASE_URL);
 
 describe('api/v1/countries', () => {
     test('get', async () => {
-        api.countries.get()
+        await api.countries.get()
         .then(response => {
             response = Object.values(response);
             expect(response.length > 0).toBe(true);

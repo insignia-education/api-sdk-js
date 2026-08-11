@@ -1,3 +1,6 @@
+// Read-only — hashes (password-reset/verify/phantom-login tokens etc.) are
+// created and deleted exclusively by their owning flows (forgot-password,
+// email-verify, admin phantom-login), never through a generic public API.
 export default class Hashes {
     #client;
 
@@ -6,6 +9,4 @@ export default class Hashes {
     }
 
     get(id = null)   { return id ? this.#client.get(`/hashes/${id}`) : this.#client.get('/hashes'); }
-    generate(data)   { return this.#client.put('/hashes/generate', data); }
-    delete(id)       { return this.#client.del(`/hashes/${id}`); }
 }

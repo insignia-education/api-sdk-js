@@ -93,8 +93,11 @@ export default class InsigniaClient {
         if (this.#baseUrl.includes('ngrok')) headers['ngrok-skip-browser-warning'] = 'true';
         const cookie  = this.#cookieHeader();
         if (cookie) headers.Cookie = cookie;
+        // POST, not PUT: PHP only parses multipart/form-data bodies into $_FILES for
+        // POST requests — a PUT with the exact same body leaves $_FILES empty and the
+        // raw body unread, so `$request->file(...)` is always null server-side.
         const response = await fetch(`${this.#baseUrl}${path}`, {
-            method: 'PUT', headers, credentials: 'include', body: formData,
+            method: 'POST', headers, credentials: 'include', body: formData,
         });
         this.#storeCookies(response);
         if (!response.ok) {

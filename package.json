@@ -1,6 +1,6 @@
 {
   "name": "@insignia-education/api-sdk-js",
-  "version": "0.15.53",
+  "version": "0.15.64",
   "description": "JavaScript SDK for the Insignia Education API",
   "main": "index.js",
   "type": "module",
@@ -10,7 +10,7 @@
     "./api/v1": "./src/api/v1/index.js"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --selectProjects unit && jest --selectProjects integration --runInBand --testTimeout=60000",
     "lint": "eslint src/"
   },
   "repository": {
@@ -20,7 +20,7 @@
   "author": "Insignia Education",
   "license": "MIT",
   "engines": {
-    "node": ">=24"
+    "node": ">=25"
   },
   "bugs": {
     "url": "https://github.com/insignia-education/api-sdk-js/issues"

@@ -14,6 +14,14 @@ const config = {
         }],
     ],
 
+    // Run via `npm test`, which invokes unit and integration as two separate
+    // `jest --selectProjects` calls (integration also with --runInBand)
+    // rather than one combined parallel run: Jest has a multi-project quirk
+    // where a later project's tests can silently fall back to the global
+    // 5000ms default instead of this project's own testTimeout when both
+    // projects run together in one process, and integration tests hit a
+    // single-threaded `php artisan serve` backend that serializes requests
+    // anyway — parallel workers just queue up and time out against it.
     projects: [
         {
             displayName: 'unit',
@@ -28,7 +36,10 @@ const config = {
             testMatch: ['<rootDir>/tests/integration/**/*.test.js'],
             transform: { '^.+\\.(js|jsx)$': 'babel-jest' },
             setupFiles: ['<rootDir>/tests/integration/loadEnv.js'],
-            testTimeout: 30000,
+            // Generous — amd64 emulation (api-sdk-js's Docker test env on
+            // Apple Silicon) occasionally makes an individual request take
+            // 10-20s+ under CPU contention.
+            testTimeout: 60000,
         },
     ],
 };

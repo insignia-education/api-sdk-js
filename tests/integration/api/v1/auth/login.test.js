@@ -1,56 +1,40 @@
-import { 
-    api, 
-    loginCustomer,
+import {
+    api,
     loginAdmin,
-    logout,
 } from '../../../../helpers.js';
 
-
-
-
 describe('api/v1/auth/login', () => {
+    // Client#request() throws on non-2xx (err.status, err.data) rather than
+    // resolving — assert against a rejected promise, not a resolved
+    // {success, status, errors}. Also no logout() before these — a fresh
+    // `api` client (one per test file) starts out unauthenticated, and
+    // logout() itself throws 401 when there's no session to clear.
     test('POST | failure | no email validation', async () => {
         const password = process.env.TEST_PASSWORD;
-        logout()
-        .then(() => api.auth.login({ password })
-            .then(response => {
-                // here we have more info of the request because we have the errors
-                expect(response["success"]).toBeDefined();
-                expect(response["status"]).toBeDefined();
-                expect(response["status"]).toBe(422);
-                expect(response["errors"]).toBeDefined();
-                expect(Object.values(response["errors"]).length > 0).toBe(true);
-                expect(response["errors"]["email"]).toBeDefined();
-            }));
+        await expect(api.auth.login({ password })).rejects.toMatchObject({
+            status: 422,
+            data: { errors: expect.objectContaining({ email: expect.anything() }) },
+        });
     });
 
     test('POST | failure | no password validation', async () => {
         const email = process.env.TEST_EMAIL;
-        logout()
-        .then(() => api.auth.login({ email })
-            .then(response => {
-                // here we have more info of the request because we have the errors
-                expect(response["success"]).toBeDefined();
-                expect(response["errors"]).toBeDefined();
-                expect(response["status"]).toBeDefined();
-                expect(response["status"]).toBe(422);
-                expect(Object.values(response["errors"]).length > 0).toBe(true);
-                expect(response["errors"]["password"]).toBeDefined();
-            }));
-        
+        await expect(api.auth.login({ email })).rejects.toMatchObject({
+            status: 422,
+            data: { errors: expect.objectContaining({ password: expect.anything() }) },
+        });
     });
 
     test('POST | success', async () => {
-        logout()
-        .then(() => loginAdmin()
+        await loginAdmin()
             .then(response => {
                 expect(response["success"]).toBeDefined();
                 expect(response["success"]).toBe("ok");
-            }));
+            });
     });
 
     test('POST | double login', async () => {
-        loginAdmin()
+        await loginAdmin()
         .then(() => loginAdmin()
             .then(response => {
                 expect(response["success"]).toBeDefined();

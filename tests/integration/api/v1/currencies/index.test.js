@@ -6,7 +6,7 @@ import {
 
 describe('api/v1/currencies', () => {
     test('get', async () => {
-        api.currencies.get()
+        await api.currencies.get()
         .then(response => {
             expect(response["1"]).toBeDefined();
             expect(response["1"]["id"]).toBeDefined();

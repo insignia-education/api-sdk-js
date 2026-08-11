@@ -45,6 +45,8 @@ export default class Courses {
             syncTelegramToUsers: (id) => this.#client.post(`${base}/${id}/sync-user-courses`),
             /** Reconciles this date's sessions with its current teacher/config set: creates missing ones, reassigns the teacher on existing ones, deletes untouched ones that no longer match the schedule. Safe to re-run any time the config, date range or teacher changes. */
             syncSessions: (id) => this.#client.post(`${base}/${id}/sync-sessions`),
+            /** Reconciles per-student attendance rows for this date's generated sessions against who's currently enrolled (UserCourse). Safe to re-run any time the roster changes. */
+            syncAttendances: (id) => this.#client.post(`${base}/${id}/sync-attendances`),
             /** Sessions already generated for this date. */
             sessions: (id) => this.#client.get(`${base}/${id}/sessions`),
             /** Create a Zoom meeting for one of this date's generated sessions. */
