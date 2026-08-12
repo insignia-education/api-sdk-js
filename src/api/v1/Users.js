@@ -110,6 +110,8 @@ export default class Users {
             stripeIntent: (data) => client.post(`${base}/stripe/intent`, data),
             /** Direct link to the invoice PDF (application/pdf, inline) — not a fetch: open/href this URL directly, same as support_file. Auth is via the ambient JWT cookie. */
             invoiceUrl: (id) => `${client.baseUrl}${base}/${id}/invoice`,
+            /** Employee-only: force a fresh render + S3 re-upload of an already-numbered payment's invoice PDF, re-notifying the buyer. Returns the reloaded payment. */
+            rebuildInvoice: (id) => client.post(`${base}/${id}/invoice/rebuild`),
         };
     }
 
