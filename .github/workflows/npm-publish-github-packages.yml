@@ -7,13 +7,10 @@ on:
 
 permissions:
   id-token: write  # Required for OIDC
-  contents: write  # Required to commit the version bump back to master
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.bump.outputs.version }}
     steps:
       - uses: actions/checkout@v6
 
@@ -26,51 +23,7 @@ jobs:
       - run: npm run build --if-present
       # npm test disabled: integration suite needs a live api backend, no CI service for it yet
 
-      - name: Bump patch version
-        id: bump
-        run: |
-          npm version patch --no-git-tag-version
-          echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
-
-      # Pushing with GITHUB_TOKEN doesn't retrigger this workflow, so no [skip ci] loop risk.
-      - name: Commit version bump
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
-          git commit -m "chore: bump version to ${{ steps.bump.outputs.version }}"
-          git push
-
+      # The version in package.json is whatever was committed — this workflow never bumps it.
+      # The pre-commit hook (.github/hooks/pre-commit) already refuses a commit whose version is
+      # already published, so publishing here just fails loudly if someone forgot to bump it.
       - run: npm publish  # Or: npm stage publish
-
-  sync-front:
-    needs: publish
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        branch: [master, beta]
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          repository: insignia-education/front
-          ref: ${{ matrix.branch }}
-          token: ${{ secrets.FRONT_REPO_PAT }}
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-
-      - name: Bump api-sdk-js dependency
-        run: npm install @insignia-education/api-sdk-js@${{ needs.publish.outputs.version }} --package-lock-only --no-audit --no-fund
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
-          if git diff --cached --quiet; then
-            echo "front@${{ matrix.branch }} already on ${{ needs.publish.outputs.version }}"
-            exit 0
-          fi
-          git commit -m "chore: bump @insignia-education/api-sdk-js to ${{ needs.publish.outputs.version }}"
-          git push origin ${{ matrix.branch }}

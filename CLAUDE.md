@@ -31,30 +31,21 @@ made here.
 
 ## Deployment / publish (GitHub Actions — read this before touching `master`)
 
-`.github/workflows/npm-publish-github-packages.yml` runs on every push to `master` (skipped only
-if the commit message contains `[skip ci]`). It is **not** a manual `npm publish` a human runs by
-hand — merging a PR to `master` is the trigger, and that merge is a human action, so the "never
-publish on your own initiative" rule in `AGENTS.md` still applies to *merging to master*, not just
-to running `npm publish` directly.
+`.github/workflows/npm-publish-github-packages.yml` runs on every push to `master`. It is **not**
+a manual `npm publish` a human runs by hand — merging a PR to `master` is the trigger, and that
+merge is a human action, so the "never publish on your own initiative" rule in `AGENTS.md` still
+applies to *merging to master*, not just to running `npm publish` directly.
 
-What the workflow actually does, in order:
-
-1. **`bump-and-publish`** — bumps the patch version (`npm version patch -m "chore: release v%s
-   [skip ci]"`), pushes the version-bump commit + tag back to `master`, then publishes the package
-   to npm (`npm publish --access public`, using `secrets.NPM_TOKEN`).
-2. **`sync-front`** (runs after publish, waits 15s for npm registry propagation) — automatically
-   syncs `front` using `secrets.FRONT_REPO_PAT`:
-   - **`beta` branch**: checks it out, runs `npm install @insignia-education/api-sdk-js@<new
-     version>`, commits, and **pushes directly** — no review step.
-   - **`master` branch**: checks it out, runs the same install, and **opens a PR** against
-     `front`'s `master` (`chore/bump-api-sdk-js-<version>`) for human review — it does not merge
-     itself.
+What the workflow actually does: installs, builds, then `npm publish`. That's it — it does **not**
+bump the version (the pre-commit hook already forces that before the commit even lands), and it
+does **not** touch `front` or any other consumer repo.
 
 **Practical implications:**
-- Merging a PR to this repo's `master` is not just "ship the SDK change" — it also auto-bumps
-  `front`'s `beta` branch with no human in the loop, and opens (but does not merge) a PR against
-  `front`'s `master`. Treat a `master` merge here as a deploy action, not a routine commit.
-- There is no manual "bump the consumer's `package.json`" step to perform for `beta` — CI already
-  does it. A human only needs to review/merge the auto-opened PR against `front`'s `master`.
-- Requires `secrets.NPM_TOKEN` (npm publish) and `secrets.FRONT_REPO_PAT` (push to `front` +
-  open PRs there) to be configured on this repo.
+- The version published is exactly whatever `package.json` says at the commit that landed on
+  `master`. If that version is already on npm (e.g. someone forgot to bump it), the publish step
+  fails loudly — there's no silent overwrite or skip.
+- Nothing else updates automatically: after a merge here, a human still has to pin the exact new
+  version (no `^`/`~`) in `front/package.json` and run `npm install` there — see this repo's
+  `AGENTS.md` and `front/AGENTS.md`'s API ↔ SDK sync rule.
+- Publishes via npm's OIDC trusted publishing (`permissions: id-token: write`) — no `NPM_TOKEN` or
+  other secret, and no cross-repo permissions, are needed anymore.

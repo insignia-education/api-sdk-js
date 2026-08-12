@@ -95,10 +95,14 @@ Consumers (`front`, `api`) must install this package the normal npm way — **ne
 - A symlinked package looks like it works, but an `npm install`/`npm ci` in the consumer repo can
   silently replace the link with a stale registry copy — the consumer keeps running old SDK code
   with no error, and edits stop propagating until someone notices at runtime.
-- Instead: bump this package's version (`npm version patch|minor`) and have the human publish it
-  (`npm publish`), then bump the version range in the consumer's `package.json` and run
-  `npm install` there.
-- Never publish on your own initiative — publishing is a human action.
+- Instead: bump this package's version (`npm version patch|minor` — the pre-commit hook rejects a
+  commit whose version is already published, so this can't be skipped) and commit it. CI
+  (`.github/workflows/npm-publish-github-packages.yml`) publishes automatically on push to
+  master — it does **not** bump the version itself, and it does **not** touch any consumer repo,
+  so pin the exact new version (no `^`/`~`) in the consumer's `package.json` and run
+  `npm install` there yourself.
+- Never publish on your own initiative — pushing the version-bump commit to master is what
+  triggers it; don't run `npm publish` by hand.
 
 ## Never do
 - Don't add runtime dependencies
