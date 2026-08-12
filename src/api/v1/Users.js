@@ -108,6 +108,8 @@ export default class Users {
             quote:  (data)      => client.post(`${base}/quote`, data),
             /** Creates a Stripe PaymentIntent for this cart; returns { client_secret, publishable_key, amount } to mount Stripe Elements with. */
             stripeIntent: (data) => client.post(`${base}/stripe/intent`, data),
+            /** Direct link to the invoice PDF (application/pdf, inline) — not a fetch: open/href this URL directly, same as support_file. Auth is via the ambient JWT cookie. */
+            invoiceUrl: (id) => `${client.baseUrl}${base}/${id}/invoice`,
         };
     }
 

@@ -18,4 +18,7 @@ export default class Sales {
 
     /** Sellers and above: users with all 3 KYC files uploaded but not yet verified. */
     kycPending() { return this.#client.get('/sales/kyc-pending'); }
+
+    /** Course dates starting within the current calendar week (Mon–Sun). */
+    coursesStartingThisWeek() { return this.#client.get('/sales/courses/starting-this-week'); }
 }

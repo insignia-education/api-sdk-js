@@ -27,6 +27,12 @@ export default class Courses {
     /** Users enrolled on this course as a teacher (user_courses.teacher = 1). */
     teachers(courseId) { return this.#client.get(`/courses/${courseId}/teachers`); }
 
+    /** Student-facing: this course's teachers who currently have open individual-session slots — the booking wizard's "choose a teacher" step. */
+    bookableTeachers(courseId) { return this.#client.get(`/courses/${courseId}/teachers/bookable`); }
+
+    /** Student-facing: one of this course's teachers' open individual-session slots, keyed by date ("Y-m-d") to a list of "H:i" start times. */
+    teacherAvailability(courseId, teacherId) { return this.#client.get(`/courses/${courseId}/teachers/${teacherId}/availability`); }
+
     /** Customer-facing session-credit pricing (no commission fields) for self-checkout. */
     sessionsPricing(courseId) { return this.#client.get(`/courses/${courseId}/sessions/pricing`); }
 

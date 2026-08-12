@@ -6,6 +6,11 @@ export default class InsigniaClient {
         this.#baseUrl = InsigniaClient._resolve(baseUrl);
     }
 
+    /** For building direct links (e.g. a PDF endpoint meant for <a href>/window.open, not a JSON fetch) — see Users.js's payments().invoiceUrl(). */
+    get baseUrl() {
+        return this.#baseUrl;
+    }
+
     static _resolve(baseUrl) {
         const envBaseUrl = typeof process !== 'undefined'
             ? process.env?.INSIGNIA_EDUCATION_API_BASE_URL ?? null

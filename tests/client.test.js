@@ -1,4 +1,5 @@
 import InsigniaClient from '../src/Client.js';
+import Users from '../src/api/v1/Users.js';
 
 const BASE = 'http://localhost:8000';
 
@@ -47,6 +48,11 @@ describe('baseUrl resolution', () => {
             'https://env.example.com/test',
             expect.any(Object)
         );
+    });
+
+    test('baseUrl getter exposes the resolved base URL', () => {
+        const client = new InsigniaClient('https://custom.example.com/');
+        expect(client.baseUrl).toBe('https://custom.example.com');
     });
 
     test('falls back to https://insigniaeducation.com when baseUrl is null and env var is not set', async () => {
@@ -244,5 +250,16 @@ describe('HTTP methods', () => {
         client = new InsigniaClient(BASE);
         const result = await client.get('/path');
         expect(result).toBeNull();
+    });
+});
+
+// ─── payments(userId).invoiceUrl ──────────────────────────────────────────────
+// A direct link, not a fetch — no HTTP call to mock/assert on, just the URL shape.
+
+describe('Users.payments(userId).invoiceUrl', () => {
+    test('builds a direct link to the invoice endpoint', () => {
+        const client = new InsigniaClient(BASE);
+        const users = new Users(client);
+        expect(users.payments(42).invoiceUrl(7)).toBe(`${BASE}/users/42/payments/7/invoice`);
     });
 });
