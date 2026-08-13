@@ -44,6 +44,13 @@ export default class Users {
             delete: (id)        => client.del(`${base}/${id}`),
             /** Submit the four-dimension completion survey (0–5 each). */
             survey: (id, data)  => client.patch(`${base}/${id}/survey`, data),
+            /**
+             * Employee-only: force a fresh render + S3 re-upload of a completed enrollment's
+             * certificate PDF. courseId is the Course id (UserCourse.course_id), not this
+             * enrollment row's own id — unlike edit()/delete()/survey() above. Returns the
+             * reloaded UserCourse (with certificate_url set), same shape as rebuildInvoice().
+             */
+            rebuildCertificate: (courseId) => client.post(`${base}/${courseId}/certificate/rebuild`),
         };
     }
     courseNotes(userId)    { return this.#nested(userId, 'course-notes'); }

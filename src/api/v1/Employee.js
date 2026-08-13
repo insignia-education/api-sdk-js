@@ -12,6 +12,8 @@ export default class Employee {
             sessions: (date) => this.#client.get(`${base}/sessions`, { date }),
             /** Every teacher's recurring weekly availability for individual sessions (day-of-week templates, not booked dates). */
             individualAvailability: () => this.#client.get(`${base}/teachers/individual-availability`),
+            /** One teacher's Individual + Quiz session instances — the admin "teacher schedule" page's sessions tab. */
+            teacherSessions: (teacherId) => this.#client.get(`${base}/teachers/${teacherId}/sessions`),
             /** All sessions for one course_date, any teacher. */
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
             /** Mark a student's attendance on any teacher's session. */

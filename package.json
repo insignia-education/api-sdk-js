@@ -1,9 +1,13 @@
 {
   "name": "@insignia-education/api-sdk-js",
-  "version": "0.15.71",
+  "version": "0.15.74",
   "description": "JavaScript SDK for the Insignia Education API",
   "main": "index.js",
   "type": "module",
+  "files": [
+    "index.js",
+    "src"
+  ],
   "exports": {
     ".": "./src/index.js",
     "./api": "./src/api/v1/index.js",
@@ -11,7 +15,8 @@
   },
   "scripts": {
     "test": "jest --selectProjects unit && jest --selectProjects integration --runInBand --testTimeout=60000",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "prepublishOnly": "node -e \"if (!process.env.GITHUB_ACTIONS) { console.error('Refusing to publish outside GitHub Actions CI — commit the version bump and push to master instead.'); process.exit(1); }\""
   },
   "repository": {
     "type": "git",
