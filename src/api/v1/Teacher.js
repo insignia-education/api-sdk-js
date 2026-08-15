@@ -70,7 +70,14 @@ export default class Teacher {
             courseCorrectableQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/correctable`),
             /** Full attempt detail (all score fields, answers, quiz.questions.answers eager-loaded) for one of this teacher's own students. */
             quizDetail: (id) => this.#client.get(`${base}/quizzes/${id}`),
-            /** Grade (or partially grade) an attempt: any field omitted keeps its current value, so open/audio/session can be saved independently of finalizing (teacher_graded_at). */
+            /**
+             * Grade (or partially grade) an attempt: any field omitted keeps its current value, so open/audio/session
+             * can be saved independently of finalizing (teacher_graded_at). `data` may include:
+             * `open_grades` ({question_id: bool}, replaces score_open — server sums each correct question's own
+             * point value), `score_audio`, `score_session_percentage`, `teacher_graded_at`,
+             * `comments_positive`/`comments_negative`/`comments_general` (only saved if the quiz's matching
+             * comment_*_enabled flag is on), `course_selected` (only saved if course_as_comment_enabled).
+             */
             gradeQuiz: (id, data) => this.#client.patch(`${base}/quizzes/${id}/grade`, data),
             /** Mark one student's attendance (present: true/false) on one of this teacher's own sessions. */
             markAttendance: (sessionId, studentId, present) => this.#client.patch(`${base}/sessions/${sessionId}/attendance`, { student_id: studentId, present }),
