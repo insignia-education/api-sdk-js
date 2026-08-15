@@ -62,6 +62,12 @@ export default class Teacher {
             courseDateCorrectableQuizzes: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/correctable`),
             /** Ungraded quiz submissions grouped by course, for every course this teacher teaches. */
             ungradedQuizzes: () => this.#client.get(`${base}/quizzes/ungraded`),
+            /** Ungraded quiz submissions for one course (any student, not just one CourseDate's) — for courses with no cohort scheduling, e.g. placement exams. */
+            courseUngradedQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/ungraded`),
+            /** Already-graded quiz submissions for one course, optionally narrowed to one quiz. */
+            courseGradedQuizzes: (courseId, quizId = null) => this.#client.get(`${base}/courses/${courseId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
+            /** Distinct { id, title } quizzes needing correction under this course — for the graded-tab quiz filter. */
+            courseCorrectableQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/correctable`),
             /** Full attempt detail (all score fields, answers, quiz.questions.answers eager-loaded) for one of this teacher's own students. */
             quizDetail: (id) => this.#client.get(`${base}/quizzes/${id}`),
             /** Grade (or partially grade) an attempt: any field omitted keeps its current value, so open/audio/session can be saved independently of finalizing (teacher_graded_at). */
