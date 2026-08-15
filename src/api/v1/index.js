@@ -3,6 +3,7 @@ import Admin from './Admin.js';
 import Auth from './Auth.js';
 import Accounts from './Accounts.js';
 import Changelogs from './Changelogs.js';
+import CompanySettings from './CompanySettings.js';
 import ContactForms from './ContactForms.js';
 import ConversationalTopics from './ConversationalTopics.js';
 import Countries from './Countries.js';
@@ -56,6 +57,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.auth                 = new Auth(this);
         this.accounts             = new Accounts(this);
         this.changelogs           = new Changelogs(this);
+        this.companySettings      = new CompanySettings(this);
         this.contactForms         = new ContactForms(this);
         this.conversationalTopics = new ConversationalTopics(this);
         this.countries            = new Countries(this);

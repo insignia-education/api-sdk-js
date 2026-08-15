@@ -68,6 +68,15 @@ export default class Users {
             delete: (id)        => client.del(`${base}/${id}`),
             /** Puts a soft-deleted attempt back. */
             restore: (id)       => client.post(`${base}/${id}/restore`),
+            /** Full attempt detail (quiz.questions.answers eager-loaded) — staff-only (any seller/employee/admin, not just this quiz's course teacher). */
+            detail: (id) => client.get(`${base}/${id}/detail`),
+            /**
+             * Staff counterpart of Teacher.dashboard().gradeQuiz() — same grading semantics
+             * (open_grades, score_audio, score_session_percentage, teacher_graded_at, the
+             * comments_ fields, course_selected — see that method's doc), but any seller/
+             * employee/admin can grade any user's attempt, not just that quiz's own course teacher.
+             */
+            grade: (id, data) => client.patch(`${base}/${id}/grade`, data),
             /**
              * Upload the file a student attaches as their answer to a
              * document_upload (PDF) or audio_answer (recording) question
