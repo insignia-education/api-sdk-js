@@ -14,6 +14,8 @@ export default class Employee {
             individualAvailability: () => this.#client.get(`${base}/teachers/individual-availability`),
             /** One teacher's Individual + Quiz session instances — the admin "teacher schedule" page's sessions tab. */
             teacherSessions: (teacherId) => this.#client.get(`${base}/teachers/${teacherId}/sessions`),
+            /** Courses this teacher is assigned to teach — the admin "teacher schedule" page's per-course subtabs. */
+            teacherCourses: (teacherId) => this.#client.get(`${base}/teachers/${teacherId}/courses`),
             /** All sessions for one course_date, any teacher. */
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
             /** Mark a student's attendance on any teacher's session. */
