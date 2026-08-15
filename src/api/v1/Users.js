@@ -212,12 +212,13 @@ export default class Users {
     /** Sales-and-above: re-run the course/individual-session access reconciliation for this user on demand. */
     syncAccess(userId) { return this.#client.post(`/users/${userId}/sync-access`); }
 
-    /** Read-only: notifications are created by internal services, not over the API. */
+    /** Notifications are created by internal services, not over the API — `resend()` is the one exception (sales-and-above). */
     notifications(userId) {
         const base = `/users/${userId}/notifications`;
         const client = this.#client;
         return {
             get: () => client.get(base),
+            resend: (id) => client.post(`${base}/${id}/resend`),
         };
     }
 
