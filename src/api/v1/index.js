@@ -2,6 +2,7 @@ import InsigniaApi from '../index.js';
 import Admin from './Admin.js';
 import Auth from './Auth.js';
 import Accounts from './Accounts.js';
+import Certificates from './Certificates.js';
 import Changelogs from './Changelogs.js';
 import CompanySettings from './CompanySettings.js';
 import ContactForms from './ContactForms.js';
@@ -56,6 +57,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.admin                = new Admin(this);
         this.auth                 = new Auth(this);
         this.accounts             = new Accounts(this);
+        this.certificates         = new Certificates(this);
         this.changelogs           = new Changelogs(this);
         this.companySettings      = new CompanySettings(this);
         this.contactForms         = new ContactForms(this);
