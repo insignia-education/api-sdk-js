@@ -38,6 +38,16 @@ export default class Quizzes {
                     delete: (id)        => client.del(`${aBase}/${id}`),
                 };
             },
+            /** Grading-rubric criteria for one question — shown to the teacher while grading an open/audio/document/link answer. */
+            criteria: (questionId) => {
+                const cBase = `${base}/${questionId}/criteria`;
+                return {
+                    get:    (id = null) => id ? client.get(`${cBase}/${id}`) : client.get(cBase),
+                    create: (data)      => client.put(cBase, data),
+                    edit:   (id, data)  => client.patch(`${cBase}/${id}`, data),
+                    delete: (id)        => client.del(`${cBase}/${id}`),
+                };
+            },
         };
     }
 }
