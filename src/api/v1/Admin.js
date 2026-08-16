@@ -9,4 +9,9 @@ export default class Admin {
     courseDates({ page, perPage } = {}) {
         return this.#client.get('/admin/courses/current-dates', { page, per_page: perPage });
     }
+
+    /** Date-range sales report: totals by status (pending/approved/rejected), and the same split by course, payment method and currency. */
+    statisticsSales({ fromDate, toDate } = {}) {
+        return this.#client.get('/admin/statistics/sales', { from_date: fromDate, to_date: toDate });
+    }
 }
