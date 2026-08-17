@@ -87,6 +87,21 @@ The SDK is language-neutral — it must never contain human-readable strings.
 - Removed endpoint → remove or deprecate the corresponding SDK method
 - Never leave the SDK behind the API; the `front` repo relies solely on this SDK
 
+## Every change bumps the version and propagates to `front`
+
+**Any change to this SDK — a new method, a signature change, even a doc-comment-only edit — must, in the same task:**
+
+1. Bump `package.json`'s version (`npm version patch` for routine changes, `minor` only for a
+   genuinely new capability — see "SDK version bumps" precedent; never bump `major`, v1 is frozen).
+2. Commit the bump alongside the code change (not as a separate, later task) and push to `master`
+   so CI publishes it (see `CLAUDE.md`'s Deployment section).
+3. Pin the exact new version (no `^`/`~`) in `front/package.json` and run `npm install` there.
+
+Skipping step 1 is what makes `npm publish`/CI publish fail with "cannot publish over the
+previously published version" — the version in `package.json` must always be higher than what's
+already on the registry, with no exceptions for "small" changes. Skipping step 3 leaves `front`
+silently running stale SDK code with no error.
+
 ## Consumption — never symlink
 
 Consumers (`front`, `api`) must install this package the normal npm way — **never** via a symlink
@@ -110,6 +125,7 @@ Consumers (`front`, `api`) must install this package the normal npm way — **ne
 - Don't hardcode API base URLs — always receive from constructor
 - Don't let the SDK lag behind `api` — update both in the same task
 - Don't symlink this package into a consumer's `node_modules` — publish it instead
+- Don't commit an SDK change without bumping the version and pinning/installing it in `front` in the same task
 
 
 ---
