@@ -89,7 +89,12 @@ export default class Users {
         };
     }
 
-    /** get() accepts an optional { courseId } filter to narrow to a single course. */
+    /**
+     * get() accepts an optional { courseId } filter to narrow to a single course.
+     * A row's recording_url_video/recording_url_audio are only populated once Zoom's
+     * recording is archived AND this user's UserCourse.recording_view allows it for that
+     * course (staff always see it) — null otherwise, even if a recording exists.
+     */
     sessions(userId) {
         const base = `/users/${userId}/sessions`;
         const client = this.#client;
