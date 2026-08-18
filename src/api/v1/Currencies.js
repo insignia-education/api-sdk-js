@@ -8,4 +8,5 @@ export default class Currencies {
     get(id = null) { return id ? this.#client.get(`/currencies/${id}`) : this.#client.get('/currencies'); }
     getValues()    { return this.#client.get('/currencies/values'); }
     getHistory(id) { return this.#client.get(`/currencies/${id}/history`); }
+    setManualValue(id, value) { return this.#client.patch(`/currencies/${id}/value`, { value }); }
 }
