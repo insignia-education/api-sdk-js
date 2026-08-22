@@ -27,6 +27,9 @@ export default class Employee {
             /** Reassign a single session's teacher (not the whole course_date — that's a course-config action). */
             changeSessionTeacher: (sessionId, teacherId) =>
                 this.#client.patch(`${base}/sessions/${sessionId}/teacher`, { teacher_id: teacherId }),
+            /** Freeform Zoom meeting for the requesting employee (no course, no student roster). time is "HH:mm". */
+            createCustomMeeting: (topic, date, time, duration) =>
+                this.#client.post(`${base}/custom-meeting`, { topic, date, time, duration }),
         };
     }
 }
