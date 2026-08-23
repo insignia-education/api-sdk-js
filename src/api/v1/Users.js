@@ -217,6 +217,18 @@ export default class Users {
     /** Sales-and-above: re-run the course/individual-session access reconciliation for this user on demand. */
     syncAccess(userId) { return this.#client.post(`/users/${userId}/sync-access`); }
 
+    /** Admin-only: total blockade — enforced on every authenticated route, not just new logins. */
+    block(userId, reason) { return this.#client.post(`/users/${userId}/block`, { reason }); }
+
+    /** Admin-only: lifts a hard block. */
+    unblock(userId) { return this.#client.post(`/users/${userId}/unblock`); }
+
+    /** GDPR erasure request — self-service or sales-and-above, always confirmed with the ACTOR's own current password. Soft-deletes now; the API permanently purges it after a 1-year retention window. */
+    delete(userId, password) { return this.#client.del(`/users/${userId}`, { password }); }
+
+    /** GDPR access/portability request (Art. 15/20) — self-service or sales-and-above. Runs synchronously and returns the DataRequest with `pdf_url`/`json_url` already populated. */
+    exportData(userId) { return this.#client.post(`/users/${userId}/data-export`); }
+
     /** Notifications are created by internal services, not over the API — `resend()` is the one exception (sales-and-above). */
     notifications(userId) {
         const base = `/users/${userId}/notifications`;

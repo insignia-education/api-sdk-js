@@ -127,5 +127,5 @@ export default class InsigniaClient {
     post(path, body = null) { return this.#request('POST',   path, body); }
     put(path, body = null)  { return this.#request('PUT',    path, body); }
     patch(path, body = null){ return this.#request('PATCH',  path, body); }
-    del(path)               { return this.#request('DELETE', path); }
+    del(path, body = null)  { return this.#request('DELETE', path, body); }
 }

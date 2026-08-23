@@ -21,4 +21,6 @@ export default class Auth {
     emailVerify(data)           { return this.#client.post('/auth/email-verify', data); }
     /** Second login step when two_factor_required: exchange { pin } for a session. */
     twoFactor(data)             { return this.#client.post('/auth/2fa', data); }
+    /** GDPR Art. 8 — clicked by the guardian from the consent email, not the account holder; no session is created. */
+    guardianConsentConfirm(hash) { return this.#client.post(`/guardian-consent/${hash}`); }
 }
