@@ -60,8 +60,8 @@ export default class Teacher {
             courseDateGradedQuizzes: (courseDateId, quizId = null) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
             /** Distinct { id, title } quizzes needing correction under this CourseDate's course — for the graded-tab quiz filter. */
             courseDateCorrectableQuizzes: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/correctable`),
-            /** Ungraded quiz submissions grouped by course, for every course this teacher teaches. */
-            ungradedQuizzes: () => this.#client.get(`${base}/quizzes/ungraded`),
+            /** Ungraded quiz submissions grouped by course, for every course this teacher teaches. hasCertificate (true/false) narrows to courses with/without Course.certificate_exam_enabled; omit for every course. */
+            ungradedQuizzes: (hasCertificate = null) => this.#client.get(`${base}/quizzes/ungraded`, hasCertificate === null ? {} : { has_certificate: hasCertificate ? 1 : 0 }),
             /** Ungraded quiz submissions for one course (any student, not just one CourseDate's) — for courses with no cohort scheduling, e.g. placement exams. */
             courseUngradedQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/ungraded`),
             /** Already-graded quiz submissions for one course, optionally narrowed to one quiz. */

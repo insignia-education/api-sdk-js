@@ -15,6 +15,11 @@ export default class Admin {
         return this.#client.get('/admin/statistics/sales', { from_date: fromDate, to_date: toDate });
     }
 
+    /** Claude (Anthropic) token usage/spend for a date range, plus account balance. Each half resolves `{ available: false }` (not an error) when its required config (admin key / account balance) isn't set. */
+    statisticsClaudeUsage({ fromDate, toDate } = {}) {
+        return this.#client.get('/admin/statistics/claude-usage', { from_date: fromDate, to_date: toDate });
+    }
+
     /** Paginated sales-report rows for a date range, with optional course/seller/payment-method/currency filters. */
     reportsSales({ fromDate, toDate, courseId, sellerId, paymentMethodId, currencyId, page, perPage } = {}) {
         return this.#client.get('/admin/reports/sales', {
