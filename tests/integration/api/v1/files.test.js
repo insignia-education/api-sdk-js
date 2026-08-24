@@ -39,4 +39,17 @@ describe('api/v1/files', () => {
                 expect(response['id']).toBeDefined();
             });
     });
+
+    // Only asserts the request is queued (pending) — the zip itself is built by
+    // files:process-zip-requests, a cron command not running in this test stack
+    // (see Dockerfile.test: php artisan serve only, no scheduler).
+    test('zip | authenticated', async () => {
+        await loginAdmin();
+        await api.files.zip({ directory: '/' })
+            .then(response => {
+                expect(response['id']).toBeDefined();
+                expect(response['status']).toBe('pending');
+                expect(response['directory']).toBe('/');
+            });
+    });
 });

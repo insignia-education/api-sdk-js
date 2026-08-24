@@ -22,4 +22,9 @@ export default class Files {
 
     /** Soft-delete a file. Pass s3=true to also remove from S3. */
     delete(id, s3 = false)      { return this.#client.del(`/files/${id}${s3 ? '?s3=1' : ''}`); }
+
+    /** Queue a zip of every file under a directory (recursive). body: { organization_id, directory }.
+     *  Returns a pending FileZipRequest immediately; the zip is built asynchronously and the
+     *  requester is notified when it's ready. */
+    zip(body)                   { return this.#client.post('/files/zip', body); }
 }
