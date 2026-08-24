@@ -23,4 +23,8 @@ export default class Auth {
     twoFactor(data)             { return this.#client.post('/auth/2fa', data); }
     /** GDPR Art. 8 — clicked by the guardian from the consent email, not the account holder; no session is created. */
     guardianConsentConfirm(hash) { return this.#client.post(`/guardian-consent/${hash}`); }
+    /** GDPR Art. 8 — a blocked minor (user.guardian_consent_required) submits their guardian's
+     *  email from the dashboard gate; exempted from the guardian-consent block server-side so
+     *  it's reachable even while everything else 403s. */
+    submitGuardianEmail(email)  { return this.#client.post('/auth/guardian-email', { email }); }
 }
