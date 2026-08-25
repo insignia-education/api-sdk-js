@@ -64,11 +64,11 @@ export default class Teacher {
             ungradedQuizzes: (hasCertificate = null) => this.#client.get(`${base}/quizzes/ungraded`, hasCertificate === null ? {} : { has_certificate: hasCertificate ? 1 : 0 }),
             /** This teacher's courses ({id, title} only, no counts) — the "Quizzes por corregir" tab's course picker. */
             courses: () => this.#client.get(`${base}/courses`),
-            /** Ungraded quiz submissions for one course (any student, not just one CourseDate's) — for courses with no cohort scheduling, e.g. placement exams. hasCertificate (true/false) narrows to Quiz.certification; omit for every quiz. */
-            courseUngradedQuizzes: (courseId, hasCertificate = null) => this.#client.get(`${base}/courses/${courseId}/quizzes/ungraded`, hasCertificate === null ? {} : { has_certificate: hasCertificate ? 1 : 0 }),
+            /** Ungraded quiz submissions for one specific quiz (one lesson) in a course — not fetched until the teacher has picked a level and a lesson; resolve quizId from correctableQuizzes()'s lesson tree. */
+            courseUngradedQuizzes: (courseId, quizId) => this.#client.get(`${base}/courses/${courseId}/quizzes/ungraded`, { quiz_id: quizId }),
             /** Already-graded quiz submissions for one course, optionally narrowed to one quiz. */
             courseGradedQuizzes: (courseId, quizId = null) => this.#client.get(`${base}/courses/${courseId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
-            /** Distinct { id, title } quizzes needing correction under this course — for the graded-tab quiz filter. */
+            /** Quizzes needing correction under this course, each with `lesson.level` eager-loaded — feeds both the graded-tab quiz filter and the pending-tab's level/lesson picker. */
             courseCorrectableQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/correctable`),
             /** Full attempt detail (all score fields, answers, quiz.questions.answers eager-loaded) for one of this teacher's own students. */
             quizDetail: (id) => this.#client.get(`${base}/quizzes/${id}`),
