@@ -58,6 +58,8 @@ export default class Courses {
             syncAttendances: (id) => this.#client.post(`${base}/${id}/sync-attendances`),
             /** Sessions already generated for this date. */
             sessions: (id) => this.#client.get(`${base}/${id}/sessions`),
+            /** Enrolled students (UserCourse rows, teacher rows excluded) assigned to this date. */
+            students: (id) => this.#client.get(`${base}/${id}/students`),
             /** Create a Zoom meeting for one of this date's generated sessions. */
             generateZoomMeeting: (id, sessionId) => this.#client.post(`${base}/${id}/sessions/${sessionId}/zoom-meeting`),
             /** Create a Zoom meeting for every session in this date that doesn't have one yet. */

@@ -53,6 +53,13 @@ export default class Users {
             rebuildCertificate: (courseId) => client.post(`${base}/${courseId}/certificate/rebuild`),
         };
     }
+
+    /** Sellers-and-above: the courses this user is assigned as teacher for (user_courses.teacher = 1). */
+    teachingCourses(userId) {
+        const client = this.#client;
+        return { get: () => client.get(`/users/${userId}/teaching-courses`) };
+    }
+
     courseNotes(userId)    { return this.#nested(userId, 'course-notes'); }
 
     /** get() accepts optional { courseId, withTrashed } filters — withTrashed also returns soft-deleted attempts. */
