@@ -60,10 +60,12 @@ export default class Teacher {
             courseDateGradedQuizzes: (courseDateId, quizId = null) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
             /** Distinct { id, title } quizzes needing correction under this CourseDate's course — for the graded-tab quiz filter. */
             courseDateCorrectableQuizzes: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/quizzes/correctable`),
-            /** Ungraded quiz submissions grouped by course, for every course this teacher teaches. hasCertificate (true/false) narrows to courses with/without Course.certificate_exam_enabled; omit for every course. */
+            /** Ungraded quiz submissions grouped by course, for every course this teacher teaches. hasCertificate (true/false) narrows to Quiz.certification; omit for every course. Slow (scans every course up front) — prefer courses() + courseUngradedQuizzes() for the tab's actual course-picker flow. */
             ungradedQuizzes: (hasCertificate = null) => this.#client.get(`${base}/quizzes/ungraded`, hasCertificate === null ? {} : { has_certificate: hasCertificate ? 1 : 0 }),
-            /** Ungraded quiz submissions for one course (any student, not just one CourseDate's) — for courses with no cohort scheduling, e.g. placement exams. */
-            courseUngradedQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/ungraded`),
+            /** This teacher's courses ({id, title} only, no counts) — the "Quizzes por corregir" tab's course picker. */
+            courses: () => this.#client.get(`${base}/courses`),
+            /** Ungraded quiz submissions for one course (any student, not just one CourseDate's) — for courses with no cohort scheduling, e.g. placement exams. hasCertificate (true/false) narrows to Quiz.certification; omit for every quiz. */
+            courseUngradedQuizzes: (courseId, hasCertificate = null) => this.#client.get(`${base}/courses/${courseId}/quizzes/ungraded`, hasCertificate === null ? {} : { has_certificate: hasCertificate ? 1 : 0 }),
             /** Already-graded quiz submissions for one course, optionally narrowed to one quiz. */
             courseGradedQuizzes: (courseId, quizId = null) => this.#client.get(`${base}/courses/${courseId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
             /** Distinct { id, title } quizzes needing correction under this course — for the graded-tab quiz filter. */
