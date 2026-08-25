@@ -55,6 +55,20 @@ export default class Admin {
         });
     }
 
+    /** Paginated per-teacher report for a date range: hours given, sessions given, absences (substituted out) and substitutions (covered for someone else). */
+    reportsTeacherStats({ fromDate, toDate, page, perPage } = {}) {
+        return this.#client.get('/admin/reports/teacher-stats', {
+            from_date: fromDate, to_date: toDate, page, per_page: perPage,
+        });
+    }
+
+    /** Direct download link for the teacher-stats report (format: 'csv' | 'xlsx'). */
+    reportsTeacherStatsExportUrl({ fromDate, toDate, format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/reports/teacher-stats/export', {
+            from_date: fromDate, to_date: toDate, format,
+        });
+    }
+
     static #buildUrl(baseUrl, path, params) {
         const qs = new URLSearchParams(
             Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
