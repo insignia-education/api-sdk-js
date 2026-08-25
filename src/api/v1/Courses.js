@@ -24,6 +24,9 @@ export default class Courses {
     edit(id, data)  { return this.#client.patch(`/courses/${id}`, data); }
     delete(id)      { return this.#client.del(`/courses/${id}`); }
 
+    /** Replaces the full set of accepted-equivalent prerequisites (any ONE unlocks the course, not all of them) — e.g. english-5 accepting english-4, english-4-personal or english-4-semi. Pass [] to clear. */
+    updatePrerequisites(id, prerequisiteIds) { return this.#client.patch(`/courses/${id}/prerequisites`, { prerequisite_ids: prerequisiteIds }); }
+
     /** Users enrolled on this course as a teacher (user_courses.teacher = 1). */
     teachers(courseId) { return this.#client.get(`/courses/${courseId}/teachers`); }
 

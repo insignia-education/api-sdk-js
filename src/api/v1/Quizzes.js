@@ -25,7 +25,8 @@ export default class Quizzes {
         const client = this.#client;
         const base = `/quizzes/${quizId}/questions`;
         return {
-            get:    (id = null) => id ? client.get(`${base}/${id}`) : client.get(base),
+            /** Pass `{ forAttempt: true }` to get the authenticated user's next-attempt question subset (capped to Quiz.max_questions) instead of the full list. */
+            get:    (id = null, { forAttempt = false } = {}) => id ? client.get(`${base}/${id}`) : client.get(base, forAttempt ? { for_attempt: 1 } : undefined),
             create: (data)      => client.put(base, data),
             edit:   (id, data)  => client.patch(`${base}/${id}`, data),
             delete: (id)        => client.del(`${base}/${id}`),
