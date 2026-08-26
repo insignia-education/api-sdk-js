@@ -11,6 +11,16 @@ export default class InsigniaClient {
         return this.#baseUrl;
     }
 
+    /** Node only — reads back a cookie captured from a prior response (e.g. to persist a session's JWT). */
+    getCookie(name) {
+        return this.#cookies.get(name) ?? null;
+    }
+
+    /** Node only — seeds a cookie onto this client (e.g. to rehydrate a session captured earlier) so it's sent on subsequent requests. */
+    setCookie(name, value) {
+        this.#cookies.set(name, value);
+    }
+
     static _resolve(baseUrl) {
         const envBaseUrl = typeof process !== 'undefined'
             ? process.env?.INSIGNIA_EDUCATION_API_BASE_URL ?? null

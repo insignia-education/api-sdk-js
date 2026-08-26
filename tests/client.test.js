@@ -253,6 +253,40 @@ describe('HTTP methods', () => {
     });
 });
 
+// ─── getCookie / setCookie ─────────────────────────────────────────────────────
+
+describe('getCookie / setCookie', () => {
+    test('getCookie returns null when the cookie was never set', () => {
+        const client = new InsigniaClient(BASE);
+        expect(client.getCookie('token')).toBeNull();
+    });
+
+    test('setCookie seeds a cookie that is sent on the next request', async () => {
+        global.fetch = mockFetch();
+        const client = new InsigniaClient(BASE);
+        client.setCookie('token', 'abc123');
+
+        await client.get('/path');
+
+        const [, options] = global.fetch.mock.calls[0];
+        expect(options.headers.Cookie).toBe('token=abc123');
+    });
+
+    test('getCookie reads back a cookie captured from a response', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
+            headers: { getSetCookie: () => ['token=abc123; Path=/; HttpOnly'] },
+            json: () => Promise.resolve({ success: 'ok' }),
+        });
+        const client = new InsigniaClient(BASE);
+
+        await client.post('/auth/login', { email: 'admin@example.com', password: 'secret' });
+
+        expect(client.getCookie('token')).toBe('abc123');
+    });
+});
+
 // ─── payments(userId).invoiceUrl ──────────────────────────────────────────────
 // A direct link, not a fetch — no HTTP call to mock/assert on, just the URL shape.
 
