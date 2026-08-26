@@ -4,8 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **Status: Active — the sole client for `insignia-education/api`.**
 > A thin, zero-runtime-dependency JavaScript SDK wrapping the Laravel 12 backend
-> [`insignia-education/api`](../api). Its only consumer is
-> [`insignia-education/front`](../front) (React 19 + Vite 8 SPA) — `front` never calls `api`
+> [`insignia-education/api`](../api). Consumed by
+> [`insignia-education/front`](../front) (React 19 + Vite 8 SPA) and
+> [`insignia-education/api-mcp`](../api-mcp) (remote MCP server) — neither calls `api`
 > directly. `v1` is being finalized and will be permanently frozen once stable; a future `v2`
 > is added alongside `v1`, never in place of it.
 
@@ -23,7 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Repo | Role |
 |---|---|
 | [`api`](../api) | Laravel backend this SDK wraps. Any endpoint added, renamed, or removed there must be mirrored here in the same task — see `AGENTS.md`'s sync rule. |
-| [`front`](../front) | The sole consumer. Talks to `api` exclusively through this package — a method missing here is a method `front` cannot use. |
+| [`front`](../front) | A consumer. Talks to `api` exclusively through this package — a method missing here is a method `front` cannot use. |
+| [`api-mcp`](../api-mcp) | A consumer. Remote MCP server for claude.ai — every call to `api` goes through this package. See its `AGENTS.md`'s "api-sdk-js sync rule". |
 
 This SDK has no independent purpose — it only exists to mirror `api`. When in doubt about what a
 method should do, the answer is "whatever the matching `api` endpoint does," not a judgment call

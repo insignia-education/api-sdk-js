@@ -13,7 +13,8 @@ npm run lint   # ESLint
 
 ## What this is
 A zero-dependency JavaScript SDK that wraps the Insignia Education API (`/api/v1`).
-Consumed by `insignia-education/front` via `@insignia-education/api-sdk-js`.
+Consumed by `insignia-education/front` and `insignia-education/api-mcp` via
+`@insignia-education/api-sdk-js`.
 
 ## API versioning
 The SDK is versioned to match the API:
@@ -87,7 +88,7 @@ The SDK is language-neutral — it must never contain human-readable strings.
 - Removed endpoint → remove or deprecate the corresponding SDK method
 - Never leave the SDK behind the API; the `front` repo relies solely on this SDK
 
-## Every change bumps the version and propagates to `front`
+## Every change bumps the version and propagates to `front` and `api-mcp`
 
 **Any change to this SDK — a new method, a signature change, even a doc-comment-only edit — must, in the same task:**
 
@@ -96,15 +97,18 @@ The SDK is language-neutral — it must never contain human-readable strings.
 2. Commit the bump alongside the code change (not as a separate, later task) and push to `master`
    so CI publishes it (see `CLAUDE.md`'s Deployment section).
 3. Pin the exact new version (no `^`/`~`) in `front/package.json` and run `npm install` there.
+4. Do the same in [`api-mcp/package.json`](../api-mcp) — see its `AGENTS.md`'s "api-sdk-js sync
+   rule". Easy to forget since it's not a browser-facing app like `front`, but it's a real
+   consumer and goes just as silently stale.
 
 Skipping step 1 is what makes `npm publish`/CI publish fail with "cannot publish over the
 previously published version" — the version in `package.json` must always be higher than what's
-already on the registry, with no exceptions for "small" changes. Skipping step 3 leaves `front`
-silently running stale SDK code with no error.
+already on the registry, with no exceptions for "small" changes. Skipping step 3 or 4 leaves that
+consumer silently running stale SDK code with no error.
 
 ## Consumption — never symlink
 
-Consumers (`front`, `api`) must install this package the normal npm way — **never** via a symlink
+Consumers (`front`, `api`, `api-mcp`) must install this package the normal npm way — **never** via a symlink
 (`npm link`, a manual `ln -s` into a consumer's `node_modules`, etc.), even for local iteration.
 
 - A symlinked package looks like it works, but an `npm install`/`npm ci` in the consumer repo can
