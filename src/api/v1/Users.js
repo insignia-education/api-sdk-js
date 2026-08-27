@@ -11,6 +11,8 @@ export default class Users {
     cashReceivers()           { return this.#client.get('/users/cash-receivers'); }
     /** Seller-type users, for the payment forms' Seller picker (checkout + admin payment create/edit). */
     sellers()                 { return this.#client.get('/users/sellers'); }
+    /** Users flagged `can_be_on_cart` — the cart checkout's own, narrower seller picker. */
+    cartSellers()             { return this.#client.get('/users/cart-sellers'); }
     /** Employee-only: users assignable as a course owner (super-admins, education centers, organizations). */
     assignable()              { return this.#client.get('/users/assignable'); }
     /** Employee-only: users assignable as a course teacher (super-admins, admins, employees, teachers). */
