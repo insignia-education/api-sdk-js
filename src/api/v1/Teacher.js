@@ -70,6 +70,8 @@ export default class Teacher {
             courseGradedQuizzes: (courseId, quizId = null) => this.#client.get(`${base}/courses/${courseId}/quizzes/graded`, quizId ? { quiz_id: quizId } : {}),
             /** Quizzes needing correction under this course, each with `lesson.level` eager-loaded — feeds both the graded-tab quiz filter and the pending-tab's level/lesson picker. */
             courseCorrectableQuizzes: (courseId) => this.#client.get(`${base}/courses/${courseId}/quizzes/correctable`),
+            /** Attempts in this course matching a student's name/email (min 2 chars), across every lesson's quiz — unlike courseUngradedQuizzes/courseGradedQuizzes, not scoped to one quiz_id. `graded` selects fully-graded vs not-yet-fully-graded attempts. */
+            courseSearchQuizzes: (courseId, q, graded = false) => this.#client.get(`${base}/courses/${courseId}/quizzes/search`, { q, graded: graded ? 1 : 0 }),
             /** Full attempt detail (all score fields, answers, quiz.questions.answers eager-loaded) for one of this teacher's own students. */
             quizDetail: (id) => this.#client.get(`${base}/quizzes/${id}`),
             /**
