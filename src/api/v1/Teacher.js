@@ -26,6 +26,8 @@ export default class Teacher {
             create: (data)      => this.#client.put(base, data),
             edit:   (id, data)  => this.#client.patch(`${base}/${id}`, data),
             delete: (id)        => this.#client.del(`${base}/${id}`),
+            /** Courses whose CourseDates schedule points at this config set — { id, title, cod } each, for a link to the course editor. */
+            courses: (id) => this.#client.get(`${base}/${id}/courses`),
         };
     }
 
