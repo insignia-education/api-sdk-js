@@ -134,6 +134,8 @@ export default class Users {
             delete: (id)        => client.del(`${base}/${id}`),
             verify: (id, data)  => client.post(`${base}/${id}/verify`, data),
             reject: (id, data)  => client.post(`${base}/${id}/reject`, data),
+            /** Admin-only manual credit/debit of the buyer's account balance — { money_added, money_substracted, password|webauthn_credential, captcha_token }. */
+            adjustMoney: (id, data) => client.post(`${base}/${id}/money`, data),
             /** Preview pricing (with any auto-applied Offer) for a prospective cart, without creating a payment. */
             quote:  (data)      => client.post(`${base}/quote`, data),
             /** Creates a Stripe PaymentIntent for this cart; returns { client_secret, publishable_key, amount } to mount Stripe Elements with. */
