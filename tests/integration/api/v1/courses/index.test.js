@@ -43,4 +43,13 @@ describe('api/v1/courses', () => {
                 expect(response["title"]).toBeDefined();
             });
     });
+
+    test('getAll | enabledOnly excludes disabled courses even for a logged-in employee', async () => {
+        await loginAdmin();
+        const all = await api.courses.getAll();
+        const enabledOnly = await api.courses.getAll({ enabledOnly: true });
+
+        expect(all.some(c => !c.enabled)).toBe(true);
+        expect(enabledOnly.every(c => c.enabled)).toBe(true);
+    });
 });

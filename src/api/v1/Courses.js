@@ -16,9 +16,17 @@ export default class Courses {
         return this.#client.get(qs ? `/courses?${qs}` : '/courses');
     }
 
-    /** Fetch all courses in a single unpaginated request (per_page=0). */
-    getAll() {
-        return this.#client.get('/courses?per_page=0');
+    /**
+     * Fetch all courses in a single unpaginated request (per_page=0).
+     * `enabledOnly: true` forces disabled courses out of the result even for a
+     * logged-in staff session — the default (employee sees everything, everyone
+     * else sees only enabled) still applies when omitted. Use this on genuinely
+     * public-facing pages (the /courses catalog, course detail pages) so staff
+     * browsing the live site see exactly what a real visitor sees.
+     */
+    getAll({ enabledOnly = false } = {}) {
+        const qs = enabledOnly ? '&enabled_only=1' : '';
+        return this.#client.get(`/courses?per_page=0${qs}`);
     }
     create(data)    { return this.#client.put('/courses', data); }
     edit(id, data)  { return this.#client.patch(`/courses/${id}`, data); }
