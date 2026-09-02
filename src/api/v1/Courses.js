@@ -56,6 +56,10 @@ export default class Courses {
             create: (data)      => this.#client.put(base, data),
             edit:   (id, data)  => this.#client.patch(`${base}/${id}`, data),
             delete: (id)        => this.#client.del(`${base}/${id}`),
+            /** Soft-deleted dates for this course, most recently deleted first — the "Deleted" tab, for undoing a mistaken delete(). */
+            trashed: () => this.#client.get(`${base}/trashed`),
+            /** Undoes delete() — brings a soft-deleted date back into the normal list. */
+            restore: (id) => this.#client.post(`${base}/${id}/restore`),
             /** Create (or reuse) a Telegram group for this date. */
             createTelegramGroup: (id) => this.#client.post(`${base}/${id}/telegram-group`),
             /** Re-copy this date's telegram_link/telegram_id onto every UserCourse assigned to it. */
