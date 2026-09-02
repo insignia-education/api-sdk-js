@@ -23,6 +23,8 @@ export default class Users {
     }
     /** Employee-only: users eligible to own/reassign an organization (organization-and-above). */
     organizationOwners()      { return this.#client.get('/users/organization-owners'); }
+    /** Sales-and-above: create an account on someone else's behalf. `type_id` is only honored for employees-and-above (see api's canAssignUserType()) — a sales actor gets a plain customer account regardless of what's sent. */
+    create(data)    { return this.#client.put('/users', data); }
     edit(id, data)  { return this.#client.patch(`/users/${id}`, data); }
 
     #nested(userId, path) {
