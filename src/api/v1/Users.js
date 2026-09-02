@@ -273,6 +273,8 @@ export default class Users {
             linkToken: () => client.post(`${base}/link-token`),
             /** Fallback flow: completes a link the bot proposed after an organic (no-payload) /start, given the { chat_id, username, expires_at, signature } it replied with. */
             connect: (data) => client.post(`${base}/connect`, data),
+            /** Undoes connect()/linkToken() — clears telegram/telegram_chat_id/telegram_verified_at, so the account reads as never-connected. */
+            disconnect: () => client.del(base),
         };
     }
 }
