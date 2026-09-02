@@ -54,6 +54,8 @@ export default class Teacher {
             courseDates: () => this.#client.get(`${base}/course-dates`),
             /** All sessions for one CourseDate, each with a `students` roster ({id, name, present}). */
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
+            /** Enrolled roster ({id, name, email}) for one CourseDate, read straight off enrollment — shows up even before any session has been synced. Read-only: does not move students between dates. */
+            courseDateStudents: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students`),
             /** { url, pending } — the zip archive of this group's course materials, or pending:true while it's (re)building. */
             courseDateContentDownload: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/content-download`),
             /** Ungraded quiz submissions from one CourseDate's own students. */
