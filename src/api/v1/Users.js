@@ -264,6 +264,16 @@ export default class Users {
         };
     }
 
+    /** Manual email verification for this user (no token/link). Sellers-and-above only. */
+    emails(userId) {
+        const base = `/users/${userId}/emails`;
+        const client = this.#client;
+        return {
+            /** field: 'email' | 'contact_mail' | 'public_mail' | 'legal_guardian_mail'. */
+            verify: (field) => client.post(`${base}/${field}/verify`),
+        };
+    }
+
     /** Verified Telegram account linking for this user. Owner or staff only. */
     telegram(userId) {
         const base = `/users/${userId}/telegram`;
