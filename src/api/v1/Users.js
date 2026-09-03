@@ -278,6 +278,17 @@ export default class Users {
         };
     }
 
+    /** Phone/WhatsApp verification for this user (manual only — no OTP/SMS flow). Sellers-and-above only. */
+    phones(userId) {
+        const base = `/users/${userId}/phones`;
+        const client = this.#client;
+        return {
+            /** field: 'phone' | 'whatsapp'. */
+            verify: (field) => client.post(`${base}/${field}/verify`),
+            unverify: (field) => client.post(`${base}/${field}/unverify`),
+        };
+    }
+
     /** Public — confirms a contact/public/guardian email verify-link's hash. No auth. */
     confirmEmailVerification(hash) {
         return this.#client.post(`/users/emails/verify/${hash}`);
