@@ -27,3 +27,28 @@ jobs:
       # The pre-commit hook (.github/hooks/pre-commit) already refuses a commit whose version is
       # already published, so publishing here just fails loudly if someone forgot to bump it.
       - run: npm publish  # Or: npm stage publish
+
+  # Independent of publish — a failure here never blocks a release. Only the 'unit'
+  # project runs (the 'integration' project needs a live api backend, no CI service
+  # for it yet — see the disabled `npm test` above), so this coverage is partial.
+  # Uploaded to S3 for the admin-only coverage viewer in front
+  # (CoverageReportController in api proxies it) — never baked into any deployed
+  # image, and this repo has no deployed image anyway.
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '25'
+          package-manager-cache: false
+      - run: npm ci
+      - run: npx jest --selectProjects unit --coverage --coverageReporters=html
+        continue-on-error: true
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - run: aws s3 sync coverage "s3://${{ vars.COVERAGE_S3_BUCKET }}/api-sdk-js/latest" --delete
+        if: always()

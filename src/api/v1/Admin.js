@@ -69,6 +69,11 @@ export default class Admin {
         });
     }
 
+    /** Direct link to a repo's CI-generated test-coverage HTML report ('api' | 'front' | 'api-sdk-js') — open with <a href>/<iframe src>, cookie-authenticated, not fetch. */
+    coverageUrl(repo) {
+        return `${this.#client.baseUrl}/admin/coverage/${repo}/`;
+    }
+
     static #buildUrl(baseUrl, path, params) {
         const qs = new URLSearchParams(
             Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
