@@ -264,14 +264,23 @@ export default class Users {
         };
     }
 
-    /** Manual email verification for this user (no token/link). Sellers-and-above only. */
+    /** Email verification for this user. verify/unverify/sendVerification: Sellers-and-above only. */
     emails(userId) {
         const base = `/users/${userId}/emails`;
         const client = this.#client;
         return {
             /** field: 'email' | 'contact_mail' | 'public_mail' | 'legal_guardian_mail'. */
             verify: (field) => client.post(`${base}/${field}/verify`),
+            /** Clears the field back to unverified. */
+            unverify: (field) => client.post(`${base}/${field}/unverify`),
+            /** Sends a real confirm-link email to whatever address is on file for field. */
+            sendVerification: (field) => client.post(`${base}/${field}/send-verification`),
         };
+    }
+
+    /** Public — confirms a contact/public/guardian email verify-link's hash. No auth. */
+    confirmEmailVerification(hash) {
+        return this.#client.post(`/users/emails/verify/${hash}`);
     }
 
     /** Verified Telegram account linking for this user. Owner or staff only. */
