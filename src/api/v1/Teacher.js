@@ -50,7 +50,7 @@ export default class Teacher {
         return {
             /** Own scheduled sessions for a given date (YYYY-MM-DD), each with a `students` roster ({id, name, present}). */
             sessions: (date) => this.#client.get(`${base}/sessions`, { date }),
-            /** Every CourseDate this teacher is assigned to. */
+            /** Every CourseDate this teacher is assigned to, each with a `students_count` (enrolled non-teacher rows). Groups nobody is enrolled in are included, with `students_count: 0`. */
             courseDates: () => this.#client.get(`${base}/course-dates`),
             /** All sessions for one CourseDate, each with a `students` roster ({id, name, present}). */
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),

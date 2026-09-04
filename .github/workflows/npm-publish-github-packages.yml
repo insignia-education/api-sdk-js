@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch: # Manual trigger, for the coverage job below — publish only ever runs on push.
 
 permissions:
   id-token: write  # Required for OIDC
 
 jobs:
   publish:
+    # push only — a manual run is for the coverage job below, never re-publishes.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -35,6 +38,9 @@ jobs:
   # (CoverageReportController in api proxies it) — never baked into any deployed
   # image, and this repo has no deployed image anyway.
   coverage:
+    # Manual only — trigger via Actions > Publish Package > Run workflow.
+    # Was on every push; opt-in instead, same as api/front's coverage jobs.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
