@@ -242,13 +242,15 @@ export default class Users {
     /** GDPR access/portability request (Art. 15/20) — self-service or sales-and-above. Runs synchronously and returns the DataRequest with `pdf_url`/`json_url` already populated. */
     exportData(userId) { return this.#client.post(`/users/${userId}/data-export`); }
 
-    /** Notifications are created by internal services, not over the API — `resend()` is the one exception (sales-and-above). */
+    /** Notifications are created by internal services, not over the API — `resend()` and `send()` (both sales-and-above) are the exceptions. */
     notifications(userId) {
         const base = `/users/${userId}/notifications`;
         const client = this.#client;
         return {
             get: () => client.get(base),
             resend: (id) => client.post(`${base}/${id}/resend`),
+            /** Composes and sends (or schedules) a one-off message to this user. data: { subject, content, channels, include_signature?, scheduled_at? }. */
+            send: (data) => client.post(`${base}/send`, data),
         };
     }
 
