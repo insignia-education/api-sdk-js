@@ -66,6 +66,9 @@ export default class Users {
 
     courseNotes(userId)    { return this.#nested(userId, 'course-notes'); }
 
+    /** Additional social/contact links (Facebook, WhatsApp, YouTube, etc.) — each row's contact_id points at a ContactTypes.get() entry. */
+    contacts(userId)       { return this.#nested(userId, 'contacts'); }
+
     /** get() accepts optional { courseId, withTrashed } filters — withTrashed also returns soft-deleted attempts. */
     quizzes(userId) {
         const base = `/users/${userId}/quizzes`;

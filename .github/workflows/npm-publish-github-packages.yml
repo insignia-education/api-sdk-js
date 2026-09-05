@@ -31,6 +31,35 @@ jobs:
       # already published, so publishing here just fails loudly if someone forgot to bump it.
       - run: npm publish  # Or: npm stage publish
 
+  # The fast gate on every push: jest --changedSince walks the module graph from
+  # the files this push touched and runs only the tests reaching them. 'unit'
+  # project only — 'integration' needs a live api backend, no CI service for it
+  # yet (same reason the full `npm test` below stays disabled here). Independent
+  # of publish, same as `coverage` below; add `needs: tests` to `publish` if
+  # you'd rather it gate.
+  tests:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # --changedSince diffs against a ref; a shallow clone has nothing to diff.
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '25'
+          package-manager-cache: false
+      - run: npm ci
+      - name: Run affected tests
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          BASE="$BEFORE"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="HEAD~1"
+          fi
+          npx jest --selectProjects unit --changedSince "$BASE"
+
   # Independent of publish — a failure here never blocks a release. Only the 'unit'
   # project runs (the 'integration' project needs a live api backend, no CI service
   # for it yet — see the disabled `npm test` above), so this coverage is partial.
