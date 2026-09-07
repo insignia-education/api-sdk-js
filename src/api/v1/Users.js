@@ -151,6 +151,8 @@ export default class Users {
             quote:  (data)      => client.post(`${base}/quote`, data),
             /** Creates a Stripe PaymentIntent for this cart; returns { client_secret, publishable_key, amount } to mount Stripe Elements with. */
             stripeIntent: (data) => client.post(`${base}/stripe/intent`, data),
+            /** Which enabled payment methods currently have an active offer for these course ids — { [payment_method_id]: { percentage, offer_id } }. Preview for the cart's payment-method selector, before any one method is chosen. */
+            offerBadges: (courseIds) => client.post(`${base}/offer-badges`, { course_ids: courseIds }),
             /** Direct link to the invoice PDF (application/pdf, inline) — not a fetch: open/href this URL directly, same as support_file. Auth is via the ambient JWT cookie. */
             invoiceUrl: (id) => `${client.baseUrl}${base}/${id}/invoice`,
             /** Employee-only: force a fresh render + S3 re-upload of an already-numbered payment's invoice PDF, re-notifying the buyer. Returns the reloaded payment. */
