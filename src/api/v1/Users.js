@@ -55,6 +55,12 @@ export default class Users {
              * reloaded UserCourse (with certificate_url set), same shape as rebuildInvoice().
              */
             rebuildCertificate: (courseId) => client.post(`${base}/${courseId}/certificate/rebuild`),
+            /**
+             * Employee-only: point the certificate at a file already picked from the general
+             * File Manager (MediaPickerModal), instead of an auto-rendered PDF. Pass url: null
+             * to clear the override. Returns the reloaded UserCourse, same shape as rebuildCertificate().
+             */
+            setCustomCertificate: (courseId, url) => client.post(`${base}/${courseId}/certificate/custom`, { url }),
         };
     }
 
