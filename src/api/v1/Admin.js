@@ -20,6 +20,16 @@ export default class Admin {
         return this.#client.get('/admin/statistics/claude-usage', { from_date: fromDate, to_date: toDate });
     }
 
+    /** Both rotating PayPal accounts' real available balance, keyed "1"/"2". Each resolves `{ available: false }` (not an error) if that account's "Transaction Search" feature isn't enabled in PayPal's dashboard yet. */
+    statisticsPaypalBalance({ currency } = {}) {
+        return this.#client.get('/admin/statistics/paypal-balance', { currency });
+    }
+
+    /** Raw PayPal transaction list for a date range (max 31 days) against one account slot (1 or 2, default 1). Resolves `{ available: false }` the same way statisticsPaypalBalance() does when it can't be read. */
+    statisticsPaypalTransactions({ fromDate, toDate, slot } = {}) {
+        return this.#client.get('/admin/statistics/paypal-transactions', { from_date: fromDate, to_date: toDate, slot });
+    }
+
     /** Paginated sales-report rows for a date range, with optional course/seller/payment-method/currency filters. */
     reportsSales({ fromDate, toDate, courseId, sellerId, paymentMethodId, currencyId, page, perPage } = {}) {
         return this.#client.get('/admin/reports/sales', {
