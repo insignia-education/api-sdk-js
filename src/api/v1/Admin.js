@@ -45,7 +45,21 @@ export default class Admin {
         return this.#client.get('/admin/statistics/stripe-transactions', { from_date: fromDate, to_date: toDate });
     }
 
-    /** Our Binance Spot account's real exchange balance (every non-zero asset) — distinct from statisticsCryptoBalances()' on-chain wallet balance. Resolves `{ available: false }` if the API key isn't configured or the request fails. */
+    /**
+     * Our Binance holdings and recent money movement — distinct from
+     * statisticsCryptoBalances()' on-chain wallet balance. Resolves
+     * `{ available, spot, earn, transactions }`:
+     * - `spot` — non-zero Spot balances `{ asset, free, locked }`.
+     * - `earn` — Simple Earn positions `{ asset, amount, type }`. Read from the
+     *   dedicated endpoints, not the `LD*` pseudo-assets in the Spot response
+     *   (those lag and under-report), which are stripped from `spot`.
+     * - `transactions` — deposits, withdrawals and Binance Pay (C2C) over
+     *   Binance's 90-day window, newest first:
+     *   `{ type, at, asset, amount, network, counterparty, completed }` where
+     *   type is `deposit` | `withdrawal` | `pay-in` | `pay-out`.
+     *
+     * Resolves `{ available: false }` if the proxy isn't configured or the call fails.
+     */
     statisticsBinanceBalances() {
         return this.#client.get('/admin/statistics/binance-balances');
     }
