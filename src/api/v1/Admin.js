@@ -55,11 +55,15 @@ export default class Admin {
      *   (those lag and under-report), which are stripped from `spot`.
      * - `transactions` — deposits, withdrawals, Binance Pay and P2P trades over
      *   Binance's 90-day window, newest first:
-     *   `{ type, at, asset, amount, network, counterparty, fiat_amount,
+     *   `{ type, at, asset, amount, network, counterparty, tx_id, fiat_amount,
      *   fiat_currency, unit_price, pay_method, completed }` where type is
      *   `deposit` | `withdrawal` | `pay-in` | `pay-out` | `p2p-buy` | `p2p-sell`.
      *   Only P2P trades carry a fiat leg (`fiat_amount`/`fiat_currency`/
      *   `unit_price`/`pay_method`); they're null for every other type.
+     *   `counterparty` is the destination wallet on a withdrawal and the other
+     *   person on Pay/P2P, but null on a deposit — Binance records only our own
+     *   receiving address there, so the sender is reachable only by looking
+     *   `tx_id` up on-chain. `tx_id` is set for on-chain movements only.
      *
      * Resolves `{ available: false }` if the proxy isn't configured or the call fails.
      */
