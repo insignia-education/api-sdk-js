@@ -30,6 +30,21 @@ export default class Admin {
         return this.#client.get('/admin/statistics/paypal-transactions', { from_date: fromDate, to_date: toDate, slot });
     }
 
+    /** Our wallet's live on-chain balance for every crypto asset/chain we accept payment in — [{ asset, chain, balance }]. Read straight from the chain, not a sum of recorded payments. */
+    statisticsCryptoBalances() {
+        return this.#client.get('/admin/statistics/crypto-balances');
+    }
+
+    /** Our Stripe account's current available/pending balance, broken down per currency. Resolves `{ available: false }` (not an error) if the account can't be read. */
+    statisticsStripeBalance() {
+        return this.#client.get('/admin/statistics/stripe-balance');
+    }
+
+    /** Raw Stripe balance-transaction list (charges, refunds, fees, payouts) for a date range. Resolves `{ available: false }` the same way statisticsStripeBalance() does. */
+    statisticsStripeTransactions({ fromDate, toDate } = {}) {
+        return this.#client.get('/admin/statistics/stripe-transactions', { from_date: fromDate, to_date: toDate });
+    }
+
     /** Paginated sales-report rows for a date range, with optional course/seller/payment-method/currency filters. */
     reportsSales({ fromDate, toDate, courseId, sellerId, paymentMethodId, currencyId, page, perPage } = {}) {
         return this.#client.get('/admin/reports/sales', {
