@@ -53,10 +53,13 @@ export default class Admin {
      * - `earn` — Simple Earn positions `{ asset, amount, type }`. Read from the
      *   dedicated endpoints, not the `LD*` pseudo-assets in the Spot response
      *   (those lag and under-report), which are stripped from `spot`.
-     * - `transactions` — deposits, withdrawals and Binance Pay (C2C) over
+     * - `transactions` — deposits, withdrawals, Binance Pay and P2P trades over
      *   Binance's 90-day window, newest first:
-     *   `{ type, at, asset, amount, network, counterparty, completed }` where
-     *   type is `deposit` | `withdrawal` | `pay-in` | `pay-out`.
+     *   `{ type, at, asset, amount, network, counterparty, fiat_amount,
+     *   fiat_currency, unit_price, pay_method, completed }` where type is
+     *   `deposit` | `withdrawal` | `pay-in` | `pay-out` | `p2p-buy` | `p2p-sell`.
+     *   Only P2P trades carry a fiat leg (`fiat_amount`/`fiat_currency`/
+     *   `unit_price`/`pay_method`); they're null for every other type.
      *
      * Resolves `{ available: false }` if the proxy isn't configured or the call fails.
      */
