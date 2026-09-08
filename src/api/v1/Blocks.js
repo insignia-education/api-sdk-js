@@ -1,4 +1,4 @@
-/** Admin-only: IP blocks (the blocks table — ip-scoped only, see App\Models\Block). */
+/** Sales-and-above: IP blocks (the blocks table — ip-scoped only, see App\Models\Block). */
 export default class Blocks {
     #client;
 
@@ -6,7 +6,11 @@ export default class Blocks {
         this.#client = client;
     }
 
-    get(id = null)  { return id ? this.#client.get(`/blocks/${id}`) : this.#client.get('/blocks'); }
-    create(data)    { return this.#client.put('/blocks', data); }
-    delete(id)      { return this.#client.del(`/blocks/${id}`); }
+    /** `id` fetches one block; omitted fetches the paginated list — `{ page, perPage }` control that page. */
+    get(id = null, { page, perPage } = {}) {
+        return id ? this.#client.get(`/blocks/${id}`) : this.#client.get('/blocks', { page, per_page: perPage });
+    }
+    create(data)     { return this.#client.put('/blocks', data); }
+    edit(id, data)   { return this.#client.patch(`/blocks/${id}`, data); }
+    delete(id)       { return this.#client.del(`/blocks/${id}`); }
 }
