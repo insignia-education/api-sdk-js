@@ -60,10 +60,11 @@ export default class Admin {
      *   `deposit` | `withdrawal` | `pay-in` | `pay-out` | `p2p-buy` | `p2p-sell`.
      *   Only P2P trades carry a fiat leg (`fiat_amount`/`fiat_currency`/
      *   `unit_price`/`pay_method`); they're null for every other type.
-     *   `counterparty` is the destination wallet on a withdrawal and the other
-     *   person on Pay/P2P, but null on a deposit — Binance records only our own
-     *   receiving address there, so the sender is reachable only by looking
-     *   `tx_id` up on-chain. `tx_id` is set for on-chain movements only.
+     *   `counterparty` is the destination wallet on a withdrawal, the sender's
+     *   wallet on a deposit (Binance itself only records our own receiving
+     *   address, so this is resolved on-chain — null if the network/coin isn't
+     *   one of the ones that lookup covers, e.g. an unmapped chain), and the
+     *   other person on Pay/P2P. `tx_id` is set for on-chain movements only.
      *
      * Resolves `{ available: false }` if the proxy isn't configured or the call fails.
      */
