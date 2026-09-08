@@ -30,6 +30,13 @@ export default class Admin {
         return this.#client.get('/admin/statistics/paypal-transactions', { from_date: fromDate, to_date: toDate, slot });
     }
 
+    /** Direct download link for the same PayPal transaction list (format: 'csv' | 'xlsx') — open with <a href>, same convention as reportsSalesExportUrl(). Downloads a headers-only file rather than erroring if the account isn't available. */
+    statisticsPaypalTransactionsExportUrl({ fromDate, toDate, slot, format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/statistics/paypal-transactions/export', {
+            from_date: fromDate, to_date: toDate, slot, format,
+        });
+    }
+
     /** Our wallet's live on-chain balance for every crypto asset/chain we accept payment in — [{ asset, chain, balance }]. Read straight from the chain, not a sum of recorded payments. */
     statisticsCryptoBalances() {
         return this.#client.get('/admin/statistics/crypto-balances');
@@ -43,6 +50,13 @@ export default class Admin {
     /** Raw Stripe balance-transaction list (charges, refunds, fees, payouts) for a date range. Resolves `{ available: false }` the same way statisticsStripeBalance() does. */
     statisticsStripeTransactions({ fromDate, toDate } = {}) {
         return this.#client.get('/admin/statistics/stripe-transactions', { from_date: fromDate, to_date: toDate });
+    }
+
+    /** Direct download link for the same Stripe transaction list (format: 'csv' | 'xlsx'). */
+    statisticsStripeTransactionsExportUrl({ fromDate, toDate, format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/statistics/stripe-transactions/export', {
+            from_date: fromDate, to_date: toDate, format,
+        });
     }
 
     /**
@@ -70,6 +84,16 @@ export default class Admin {
      */
     statisticsBinanceBalances() {
         return this.#client.get('/admin/statistics/binance-balances');
+    }
+
+    /**
+     * Direct download link for the same `transactions` list (format: 'csv' |
+     * 'xlsx') — no date-range params, unlike the PayPal/Stripe export links
+     * above: Binance's own API already caps history at 90 days, so this
+     * always exports the full set that's currently available.
+     */
+    statisticsBinanceTransactionsExportUrl({ format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/statistics/binance-transactions/export', { format });
     }
 
     /** Paginated sales-report rows for a date range, with optional course/seller/payment-method/currency filters. */
