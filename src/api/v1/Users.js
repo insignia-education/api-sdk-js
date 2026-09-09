@@ -247,8 +247,20 @@ export default class Users {
     /** Admin-only: lifts a hard block. */
     unblock(userId) { return this.#client.post(`/users/${userId}/unblock`); }
 
-    /** GDPR erasure request — self-service or sales-and-above, always confirmed with the ACTOR's own current password. Soft-deletes now; the API permanently purges it after a 1-year retention window. */
-    delete(userId, password) { return this.#client.del(`/users/${userId}`, { password }); }
+    /**
+     * GDPR erasure request — self-service or sales-and-above. `data` is either
+     * `{ password, captcha_token }` or `{ webauthn_credential }`, same step-up
+     * shape as payments().verify()/reject(). Soft-deletes now; the API
+     * permanently purges it after a 1-year retention window, and immediately
+     * emails a one-time undo link to the account's own address.
+     */
+    delete(userId, data) { return this.#client.del(`/users/${userId}`, data); }
+
+    /** Sellers+: reverses a soft-deletion found via the global search (which includes trashed accounts). */
+    restore(userId) { return this.#client.post(`/users/${userId}/restore`); }
+
+    /** Public — the account is soft-deleted so its own session is already dead; this is the only way it gets back in. No auth. */
+    undoDeletionConfirm(hash) { return this.#client.post(`/accounts/undo-deletion/${hash}`); }
 
     /** GDPR access/portability request (Art. 15/20) — self-service or sales-and-above. Runs synchronously and returns the DataRequest with `pdf_url`/`json_url` already populated. */
     exportData(userId) { return this.#client.post(`/users/${userId}/data-export`); }
