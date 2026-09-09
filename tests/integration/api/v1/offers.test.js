@@ -5,9 +5,9 @@ describe('api/v1/offers', () => {
         await loginAdmin();
         await api.offers.get()
             .then(response => {
-                response = Object.values(response);
-                expect(Array.isArray(response)).toBe(true);
-                response.forEach(offer => {
+                expect(Array.isArray(response["data"])).toBe(true);
+                expect(response["data"].length > 0).toBe(true);
+                response["data"].forEach(offer => {
                     expect(offer["id"]).toBeDefined();
                     expect(offer["title"]).toBeDefined();
                     expect(offer["percentage"]).toBeDefined();

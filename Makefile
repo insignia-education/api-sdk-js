@@ -94,6 +94,9 @@ test-env-up: ecr-login
 		-e TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA \
 		-e JWT_SECRET="$$(openssl rand -hex 32)" \
 		-e TELESCOPE_ENABLED=false \
+		-e TELEGRAM_BOT_TOKEN=123456:dummy-test-bot-token \
+		-e TELEGRAM_API_ID=12345 \
+		-e TELEGRAM_API_HASH=dummytestapihash00000000000000 \
 		$(API_TEST_IMAGE) >/dev/null
 	@echo "Waiting for API to respond..."
 	@for i in $$(seq 1 60); do \

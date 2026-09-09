@@ -24,7 +24,8 @@ jobs:
           package-manager-cache: false  # never use caching in release builds
       - run: npm ci
       - run: npm run build --if-present
-      # npm test disabled: integration suite needs a live api backend, no CI service for it yet
+      # Full `npm test` (unit + integration) is not run here — the independent `tests` and
+      # `integration-tests` jobs below cover both, and a failure there doesn't block this publish.
 
       # The version in package.json is whatever was committed — this workflow never bumps it.
       # The pre-commit hook (.github/hooks/pre-commit) already refuses a commit whose version is
@@ -33,10 +34,8 @@ jobs:
 
   # The fast gate on every push: jest --changedSince walks the module graph from
   # the files this push touched and runs only the tests reaching them. 'unit'
-  # project only — 'integration' needs a live api backend, no CI service for it
-  # yet (same reason the full `npm test` below stays disabled here). Independent
-  # of publish, same as `coverage` below; add `needs: tests` to `publish` if
-  # you'd rather it gate.
+  # project only — independent of publish, same as `coverage`/`integration-tests`
+  # below; add `needs: tests` to `publish` if you'd rather it gate.
   tests:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -60,12 +59,63 @@ jobs:
           fi
           npx jest --selectProjects unit --changedSince "$BASE"
 
+  # Same --changedSince fast-gate idea as `tests` above, applied to the
+  # 'integration' project: only the ephemeral api-test + MySQL container pair
+  # (see `make test-env-up` in the Makefile) is worth paying for when a change
+  # actually reaches an integration test. Driven directly here instead of
+  # through `make test` so the teardown step can run unconditionally via
+  # `if: always()`. Independent of publish — a failure here never blocks a
+  # release; add `needs: integration-tests` to `publish` if you'd rather it gate.
+  integration-tests:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # --changedSince diffs against a ref; a shallow clone has nothing to diff.
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '25'
+          package-manager-cache: false
+      - run: npm ci
+      - name: Resolve affected integration tests
+        id: affected
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          BASE="$BEFORE"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="HEAD~1"
+          fi
+          TESTS=$(npx jest --selectProjects integration --changedSince "$BASE" --listTests | tr '\n' ' ')
+          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+          if [ -z "$TESTS" ]; then
+            echo "No integration test covers this push — nothing to run."
+          else
+            echo "Affected: $TESTS"
+          fi
+      - uses: aws-actions/configure-aws-credentials@v6
+        if: steps.affected.outputs.tests != ''
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Start ephemeral api-test + MySQL (see Makefile's test-env-up)
+        if: steps.affected.outputs.tests != ''
+        run: make test-env-up
+      - name: Run affected integration tests
+        if: steps.affected.outputs.tests != ''
+        run: npx jest --selectProjects integration --runInBand --testTimeout=60000 ${{ steps.affected.outputs.tests }}
+      - name: Tear down ephemeral test env
+        if: always()
+        run: make test-env-down
+
   # Independent of publish — a failure here never blocks a release. Only the 'unit'
-  # project runs (the 'integration' project needs a live api backend, no CI service
-  # for it yet — see the disabled `npm test` above), so this coverage is partial.
-  # Uploaded to S3 for the admin-only coverage viewer in front
-  # (CoverageReportController in api proxies it) — never baked into any deployed
-  # image, and this repo has no deployed image anyway.
+  # project runs, so this coverage is partial (the 'integration' project above
+  # doesn't produce coverage output). Uploaded to S3 for the admin-only coverage
+  # viewer in front (CoverageReportController in api proxies it) — never baked
+  # into any deployed image, and this repo has no deployed image anyway.
   coverage:
     # Manual only — trigger via Actions > Publish Package > Run workflow.
     # Was on every push; opt-in instead, same as api/front's coverage jobs.

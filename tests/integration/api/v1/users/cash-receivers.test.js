@@ -1,11 +1,11 @@
-import { 
-    api, 
-    loginCustomer,
+import {
+    api,
     loginAdmin
 } from '../../../../helpers.js';
 
 describe('api/v1/users/cash-receivers', () => {
     test('get', async () => {
+        await loginAdmin();
         await api.users.cashReceivers()
             .then(response => {
                 expect(response.length > 0).toBe(true);
