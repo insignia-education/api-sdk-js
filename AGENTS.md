@@ -94,17 +94,31 @@ The SDK is language-neutral — it must never contain human-readable strings.
 
 1. Bump `package.json`'s version (`npm version patch` for routine changes, `minor` only for a
    genuinely new capability — see "SDK version bumps" precedent; never bump `major`, v1 is frozen).
-2. Commit the bump alongside the code change (not as a separate, later task) and push to `master`
-   so CI publishes it (see `CLAUDE.md`'s Deployment section).
-3. Pin the exact new version (no `^`/`~`) in `front/package.json` and run `npm install` there.
-4. Do the same in [`api-mcp/package.json`](../api-mcp) — see its `AGENTS.md`'s "api-sdk-js sync
+   **Do this for every commit that touches SDK source, with no exceptions** — including a second
+   commit landing shortly after a first one in the same session. A version left unbumped across
+   two commits is exactly what makes the *next* push fail with "cannot publish over the previously
+   published version": the check only compares `package.json`'s version against the registry at
+   commit time, so it can't catch "this was already bumped once this session, but not again for
+   this commit."
+2. Commit the bump alongside the code change (not as a separate, later task) and push to `master`.
+3. **Confirm the publish actually succeeded before touching any consumer** — check the
+   `npm-publish-github-packages.yml` workflow run (`gh run list`/`gh run view`) or the registry
+   itself. Do not pin the new version into `front` or `api-mcp` on the assumption that pushing
+   necessarily published it — the workflow can fail (most commonly on exactly the "already
+   published" error step 1 exists to prevent), and pinning a version that never actually landed on
+   the registry breaks that consumer's next `npm install` with no clue why.
+4. Once confirmed published, pin the exact new version (no `^`/`~`) in `front/package.json` and run
+   `npm install` there.
+5. Do the same in [`api-mcp/package.json`](../api-mcp) — see its `AGENTS.md`'s "api-sdk-js sync
    rule". Easy to forget since it's not a browser-facing app like `front`, but it's a real
    consumer and goes just as silently stale.
 
 Skipping step 1 is what makes `npm publish`/CI publish fail with "cannot publish over the
 previously published version" — the version in `package.json` must always be higher than what's
-already on the registry, with no exceptions for "small" changes. Skipping step 3 or 4 leaves that
-consumer silently running stale SDK code with no error.
+already on the registry, with no exceptions for "small" changes, and no exception for "I already
+bumped it earlier this session." Skipping step 3 risks pinning consumers to a version that isn't
+actually there. Skipping step 4 or 5 leaves that consumer silently running stale SDK code with no
+error.
 
 ## Consumption — never symlink
 
@@ -130,6 +144,7 @@ Consumers (`front`, `api`, `api-mcp`) must install this package the normal npm w
 - Don't let the SDK lag behind `api` — update both in the same task
 - Don't symlink this package into a consumer's `node_modules` — publish it instead
 - Don't commit an SDK change without bumping the version and pinning/installing it in `front` in the same task
+- Don't pin a new SDK version into `front`/`api-mcp` before confirming the publish actually succeeded
 
 
 ---
