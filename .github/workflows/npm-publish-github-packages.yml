@@ -8,6 +8,7 @@ on:
 
 permissions:
   id-token: write  # Required for OIDC
+  contents: write  # Required for the auto-bump-and-push step below
 
 jobs:
   publish:
@@ -27,9 +28,30 @@ jobs:
       # Full `npm test` (unit + integration) is not run here — the independent `tests` and
       # `integration-tests` jobs below cover both, and a failure there doesn't block this publish.
 
-      # The version in package.json is whatever was committed — this workflow never bumps it.
-      # The pre-commit hook (.github/hooks/pre-commit) already refuses a commit whose version is
-      # already published, so publishing here just fails loudly if someone forgot to bump it.
+      # Self-healing safety net: the pre-commit hook (.github/hooks/pre-commit) is supposed to
+      # catch a forgotten version bump before it's even committed, but it only runs locally and
+      # can be skipped (--no-verify, or a commit made before the hook was installed). Rather than
+      # let `npm publish` fail loudly here every time that happens, auto-bump the patch version
+      # and push that commit back to master before publishing — so a forgotten bump costs nothing.
+      - name: Auto-bump patch version if this one's already published
+        run: |
+          PACKAGE=$(node -p "require('./package.json').name")
+          CURRENT=$(node -p "require('./package.json').version")
+          PUBLISHED=$(npm view "$PACKAGE" version 2>/dev/null || echo "")
+          if [ "$CURRENT" = "$PUBLISHED" ]; then
+            NEW=$(node -p "const v = require('./package.json').version.split('.'); v[2] = Number(v[2]) + 1; v.join('.')")
+            node -e "
+              const fs = require('fs');
+              const p = require('./package.json');
+              p.version = '$NEW';
+              fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
+            "
+            echo "package.json@${CURRENT} is already published — auto-bumped to ${NEW}."
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -am "auto-bump version to ${NEW} [skip ci]"
+            git push
+          fi
       - run: npm publish  # Or: npm stage publish
 
   # The fast gate on every push: jest --changedSince walks the module graph from
