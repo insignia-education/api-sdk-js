@@ -61,6 +61,19 @@ export default class Users {
              * to clear the override. Returns the reloaded UserCourse, same shape as rebuildCertificate().
              */
             setCustomCertificate: (courseId, url) => client.post(`${base}/${courseId}/certificate/custom`, { url }),
+            /**
+             * Employee-only: upload a hand-made PDF as this enrollment's certificate, instead
+             * of picking one already in the File Manager (setCustomCertificate) or the
+             * auto-rendered one (rebuildCertificate). Backend requires the enrollment to
+             * already be completed (completed_at set) — same rule rebuildCertificate() and
+             * setCustomCertificate() are subject to. Returns the reloaded UserCourse, same
+             * shape as the other two.
+             */
+            uploadCertificate: (courseId, file) => {
+                const fd = new FormData();
+                fd.append('file', file);
+                return client.upload(`${base}/${courseId}/certificate/upload`, fd);
+            },
         };
     }
 
