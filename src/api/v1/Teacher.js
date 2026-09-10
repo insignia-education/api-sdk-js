@@ -56,6 +56,8 @@ export default class Teacher {
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
             /** Enrolled roster ({id, name, email}) for one CourseDate, read straight off enrollment — shows up even before any session has been synced. Read-only: does not move students between dates. */
             courseDateStudents: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students`),
+            /** One student's quiz attempts in this CourseDate's course, every one of them - not just needs_teacher_correction=1 (auto-graded ones never show up in the "Quizzes por corregir" surfaces below). Each row carries `quiz.needs_teacher_correction`, `level`/`lesson`, `final_score_percentage`; filter by level/lesson client-side. */
+            courseDateStudentQuizzes: (courseDateId, studentId) => this.#client.get(`${base}/course-dates/${courseDateId}/students/${studentId}/quizzes`),
             /** { url, pending } — the zip archive of this group's course materials, or pending:true while it's (re)building. */
             courseDateContentDownload: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/content-download`),
             /** Ungraded quiz submissions from one CourseDate's own students. */
