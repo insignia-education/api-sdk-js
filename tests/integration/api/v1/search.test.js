@@ -4,6 +4,8 @@ import {
     loginAdmin
 } from '../../../helpers.js';
 
+// The API only searches (and includes users_has_more) once the query is >= 2
+// chars — a 1-char query short-circuits to { users: [], courses: [] }.
 describe('api/v1/search', () => {
     test('query | unauthenticated', async () => {
         await expect(api.search.query('ad')).rejects.toMatchObject({ status: 401 });
