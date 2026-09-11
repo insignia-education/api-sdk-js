@@ -95,6 +95,7 @@ test-env-up: ecr-login
 		-e JWT_SECRET="$$(openssl rand -hex 32)" \
 		-e TELESCOPE_ENABLED=false \
 		-e TELEGRAM_BOT_TOKEN=123456:dummy-test-bot-token \
+		-e TELEGRAM_BOT_USERNAME=dummy_test_bot \
 		-e TELEGRAM_API_ID=12345 \
 		-e TELEGRAM_API_HASH=dummytestapihash00000000000000 \
 		$(API_TEST_IMAGE) >/dev/null

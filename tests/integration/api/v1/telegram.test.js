@@ -2,6 +2,7 @@ import {
     api,
     loginAdmin,
     loginCustomer,
+    logout,
 } from '../../../helpers.js';
 
 describe('api/v1/telegram', () => {
@@ -23,6 +24,7 @@ describe('api/v1/telegram', () => {
     });
 
     test('setWebhook | requires authentication', async () => {
+        await logout();
         await expect(api.telegram.setWebhook()).rejects.toMatchObject({ status: 401 });
     });
 
