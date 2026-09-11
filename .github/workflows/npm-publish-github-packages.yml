@@ -129,6 +129,23 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
+      - name: Write .env.test
+        if: steps.affected.outputs.tests != ''
+        # .env.test is gitignored (like any dotenv file) so it's never present on a
+        # fresh checkout — CI was silently running every integration test against
+        # the SDK's hardcoded default base URL (the real insigniaeducation.com)
+        # instead of the ephemeral container, since INSIGNIA_EDUCATION_API_BASE_URL
+        # was simply unset. None of this is a real secret: TEST_PASSWORD(_ADMIN) are
+        # fixed values the ephemeral container's migrations seed verbatim (see the
+        # Makefile's test-env-up comment), and the port matches TEST_API_PORT below.
+        run: |
+          cat > .env.test <<'EOF'
+          INSIGNIA_EDUCATION_API_BASE_URL=http://localhost:8001
+          TEST_EMAIL=roquendo@insigniaeducation.com
+          TEST_PASSWORD=12345678
+          TEST_EMAIL_ADMIN=rodolfoquendo@gmail.com
+          TEST_PASSWORD_ADMIN=12345678
+          EOF
       - name: Start ephemeral api-test + MySQL (see Makefile's test-env-up)
         if: steps.affected.outputs.tests != ''
         run: make test-env-up
