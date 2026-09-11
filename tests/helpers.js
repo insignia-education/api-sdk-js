@@ -1,5 +1,9 @@
 import InsigniaApiV1 from '../src/api/v1/index.js';
 
+// INSIGNIA_EDUCATION_API_BASE_URL comes from .env.test (see loadEnv.js) — without it
+// this silently falls back to the SDK's hardcoded default (the real production site)
+// instead of the ephemeral test container, which is exactly what happened in CI before
+// .env.test was written there (see npm-publish-github-packages.yml).
 export const api = new InsigniaApiV1(process.env.INSIGNIA_EDUCATION_API_BASE_URL);
 
 // captcha_token is required by LoginRequest; relies on the local API's TURNSTILE_SECRET_KEY
