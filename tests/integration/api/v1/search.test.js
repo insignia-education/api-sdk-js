@@ -6,15 +6,15 @@ import {
 
 describe('api/v1/search', () => {
     test('query | unauthenticated', async () => {
-        await expect(api.search.query('a')).rejects.toMatchObject({ status: 401 });
+        await expect(api.search.query('ad')).rejects.toMatchObject({ status: 401 });
     });
     test('query | authenticated but other type', async () => {
         await loginCustomer();
-        await expect(api.search.query('a')).rejects.toMatchObject({ status: 403 });
+        await expect(api.search.query('ad')).rejects.toMatchObject({ status: 403 });
     });
     test('query | authenticated', async () => {
         await loginAdmin();
-        await api.search.query('a')
+        await api.search.query('ad')
             .then(response => {
                 expect(Array.isArray(response.users)).toBe(true);
                 expect(Array.isArray(response.courses)).toBe(true);
@@ -23,10 +23,10 @@ describe('api/v1/search', () => {
     });
     test('query | offset pages through the user results', async () => {
         await loginAdmin();
-        await api.search.query('a', 0)
+        await api.search.query('ad', 0)
             .then(firstPage => {
                 if (!firstPage.users_has_more) return;
-                return api.search.query('a', firstPage.users.length)
+                return api.search.query('ad', firstPage.users.length)
                     .then(secondPage => {
                         expect(secondPage.users[0]?.id).not.toBe(firstPage.users[0]?.id);
                     });
