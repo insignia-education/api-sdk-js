@@ -111,6 +111,8 @@ test-env-up: ecr-login
 	fi
 	@echo "Running migrations + seed..."
 	@docker exec -w /platform $(TEST_API_CONTAINER) php artisan migrate --force
+	@echo "Tables right after migrate:"
+	@docker exec $(TEST_DB_CONTAINER) mysql -uroot -p$(TEST_DB_PASSWORD) $(TEST_DB_DATABASE) -e "SHOW TABLES LIKE 'block%';" 2>&1
 	@docker exec -w /platform $(TEST_API_CONTAINER) php artisan db:seed --force
 	@echo "Test environment ready at http://localhost:$(TEST_API_PORT)"
 
