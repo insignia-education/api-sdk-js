@@ -150,6 +150,17 @@ export default class Admin {
         return `${this.#client.baseUrl}/admin/coverage/${repo}/`;
     }
 
+    /**
+     * Recent GitHub Actions workflow runs for 'api' and 'front' (the only repos
+     * GithubActionsService covers), newest first, `{ limit }` each (default 20, max 50).
+     * Resolves `{ available: false }` (not an error) if the server has no GitHub token
+     * configured, per repo — check `repos.api.available` / `repos.front.available`
+     * separately rather than assuming both are up together.
+     */
+    actionsStatus({ limit } = {}) {
+        return this.#client.get('/admin/actions/status', { limit });
+    }
+
     static #buildUrl(baseUrl, path, params) {
         const qs = new URLSearchParams(
             Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
