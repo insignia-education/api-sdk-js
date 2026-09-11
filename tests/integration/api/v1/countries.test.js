@@ -13,6 +13,8 @@ describe('api/v1/countries', () => {
                 expect(country["id"]).toBeDefined();
                 expect(country["cod"]).toBeDefined();
                 expect(country["domain"]).toBeDefined();
+                expect(country["title"]).toBeDefined();
+                expect(country["flag_emoji"]).toBeDefined();
                 expect(country["phone_prefix"]).toBeDefined();
             })
         });

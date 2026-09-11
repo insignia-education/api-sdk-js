@@ -113,6 +113,9 @@ test-env-up: ecr-login
 	@echo "Running migrations + seed..."
 	@docker exec -w /platform $(TEST_API_CONTAINER) php artisan migrate --force
 	@docker exec -w /platform $(TEST_API_CONTAINER) php artisan db:seed --force
+	@echo "Raw response right after migrate+seed:"
+	@curl -s http://localhost:$(TEST_API_PORT)/api/v1/countries 2>&1 | head -c 2000
+	@echo ""
 	@echo "Test environment ready at http://localhost:$(TEST_API_PORT)"
 
 test-env-down:
