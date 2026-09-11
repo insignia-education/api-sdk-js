@@ -1,5 +1,13 @@
 # Insignia Education — API SDK (JavaScript)
 
+> **Status: Active — the sole client for `insignia-education/api`.**
+> A thin, zero-runtime-dependency JavaScript SDK wrapping the Laravel 12 backend
+> [`insignia-education/api`](../api). Consumed by
+> [`insignia-education/front`](../front) (React 19 + Vite 8 SPA) and
+> [`insignia-education/api-mcp`](../api-mcp) (remote MCP server) — neither calls `api`
+> directly. `v1` is being finalized and will be permanently frozen once stable; a future `v2`
+> is added alongside `v1`, never in place of it.
+
 ## Requirements
 - Node 24 LTS (`nvm use 24`)
 
@@ -27,6 +35,18 @@ The SDK is versioned to match the API:
 - Never modify the URL construction logic in `v1/` to point at a different version.
 - Tests for each version live in `tests/integration/api/v1/` — mirror this structure for v2+.
 - The `upload(path, formData)` method on `Client` sends multipart — use `api.files.upload(fd)` for any file upload, never raw `fetch()`.
+
+## Related repos
+
+| Repo | Role |
+|---|---|
+| [`api`](../api) | Laravel backend this SDK wraps. Any endpoint added, renamed, or removed there must be mirrored here in the same task — see the API ↔ SDK sync rule below. |
+| [`front`](../front) | A consumer. Talks to `api` exclusively through this package — a method missing here is a method `front` cannot use. |
+| [`api-mcp`](../api-mcp) | A consumer. Remote MCP server for claude.ai — every call to `api` goes through this package. See its `AGENTS.md`'s "api-sdk-js sync rule". |
+
+This SDK has no independent purpose — it only exists to mirror `api`. When in doubt about what a
+method should do, the answer is "whatever the matching `api` endpoint does," not a judgment call
+made here.
 
 ## Structure
 ```
@@ -57,6 +77,10 @@ api.users.cashReceivers();
 - ESM modules (`"type": "module"`)
 
 ## Adding a new resource
+
+Follow `.ai/guidelines/research-order.md`'s lookup order (AGENTS.md → matching `api` endpoint →
+sibling resource files → deeper exploration) before writing or changing a resource method.
+
 1. Create `src/api/v1/ResourceName.js` with a class that receives the client
 2. Register it in `src/api/v1/index.js`
 3. Write integration tests in `tests/integration/api/v1/resource-name.test.js`
@@ -106,7 +130,8 @@ The SDK is language-neutral — it must never contain human-readable strings.
    itself. Do not pin the new version into `front` or `api-mcp` on the assumption that pushing
    necessarily published it — the workflow can fail (most commonly on exactly the "already
    published" error step 1 exists to prevent), and pinning a version that never actually landed on
-   the registry breaks that consumer's next `npm install` with no clue why.
+   the registry breaks that consumer's next `npm install` with no clue why. See
+   `.ai/docs/deployment.md` for exactly what the publish workflow does and doesn't do.
 4. Once confirmed published, pin the exact new version (no `^`/`~`) in `front/package.json` and run
    `npm install` there.
 5. Do the same in [`api-mcp/package.json`](../api-mcp) — see its `AGENTS.md`'s "api-sdk-js sync
