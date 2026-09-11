@@ -17,5 +17,4 @@ export const loginAdmin = () => api.auth.login({
     captcha_token: 'test',
 });
 
-
 export const logout = () => api.auth.logout();
