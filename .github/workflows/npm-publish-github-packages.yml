@@ -110,7 +110,13 @@ jobs:
           if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
             BASE="HEAD~1"
           fi
-          TESTS=$(npx jest --selectProjects integration --changedSince "$BASE" --listTests | tr '\n' ' ')
+          # --listTests prints one absolute test-file path per line, but Jest 30 also
+          # writes a "Running one project: integration" banner to stdout — left in, that
+          # banner's own word "integration" matches every integration test's path (they
+          # all live under tests/integration/), so the "affected" run below silently
+          # widened into running the entire suite instead of just what changed. Keep only
+          # lines that are actual test file paths.
+          TESTS=$(npx jest --selectProjects integration --changedSince "$BASE" --listTests | grep '\.test\.js$' | tr '\n' ' ')
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
           if [ -z "$TESTS" ]; then
             echo "No integration test covers this push — nothing to run."
@@ -129,6 +135,9 @@ jobs:
       - name: Run affected integration tests
         if: steps.affected.outputs.tests != ''
         run: npx jest --selectProjects integration --runInBand --testTimeout=60000 ${{ steps.affected.outputs.tests }}
+      - name: Dump api-test container logs on failure
+        if: failure() && steps.affected.outputs.tests != ''
+        run: docker logs api-sdk-test-api 2>&1 | tail -200
       - name: Tear down ephemeral test env
         if: always()
         run: make test-env-down

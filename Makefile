@@ -100,10 +100,15 @@ test-env-up: ecr-login
 		-e TELEGRAM_API_HASH=dummytestapihash00000000000000 \
 		$(API_TEST_IMAGE) >/dev/null
 	@echo "Waiting for API to respond..."
-	@for i in $$(seq 1 60); do \
-		curl -sSf -o /dev/null http://localhost:$(TEST_API_PORT)/ 2>/dev/null && break; \
+	@ready=0; \
+	for i in $$(seq 1 60); do \
+		curl -sSf -o /dev/null http://localhost:$(TEST_API_PORT)/ 2>/dev/null && ready=1 && break; \
 		sleep 1; \
-	done
+	done; \
+	if [ "$$ready" != "1" ]; then \
+		echo "API never responded within 60s — dumping container logs for diagnosis:"; \
+		docker logs $(TEST_API_CONTAINER) 2>&1 | tail -100; \
+	fi
 	@echo "Running migrations + seed..."
 	@docker exec -w /platform $(TEST_API_CONTAINER) php artisan migrate --force
 	@docker exec -w /platform $(TEST_API_CONTAINER) php artisan db:seed --force
