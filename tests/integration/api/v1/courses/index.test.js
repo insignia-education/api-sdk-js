@@ -8,7 +8,6 @@ describe('api/v1/courses', () => {
     test('get | returns paginated list', async () => {
         await api.courses.get()
             .then(response => {
-                console.log(response);
                 expect(response["data"]).toBeDefined();
                 expect(response["current_page"]).toBeDefined();
                 expect(response["last_page"]).toBeDefined();
