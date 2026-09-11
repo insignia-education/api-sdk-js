@@ -24,6 +24,9 @@ describe('api/v1/telegram', () => {
     });
 
     test('setWebhook | requires authentication', async () => {
+        // The previous test logs in as admin on this same shared `api` client — without
+        // logging out first this would actually be authenticated, reaching the real
+        // Telegram call (and its 500) instead of the 401 below.
         await logout();
         await expect(api.telegram.setWebhook()).rejects.toMatchObject({ status: 401 });
     });
