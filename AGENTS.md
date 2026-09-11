@@ -8,6 +8,13 @@
 > directly. `v1` is being finalized and will be permanently frozen once stable; a future `v2`
 > is added alongside `v1`, never in place of it.
 
+## Skills & subagents
+
+Real files live under `.claude/skills/` and `.claude/agents/` (Claude Code only auto-discovers
+skills/subagents from those exact paths). `.ai/skills` and `.ai/agents` are symlinks to the same
+content, so anyone browsing `.ai/` for everything finds them too — edit under `.claude/`, `.ai/`
+just follows.
+
 ## Requirements
 - Node 24 LTS (`nvm use 24`)
 
