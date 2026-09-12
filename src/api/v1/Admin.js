@@ -151,14 +151,32 @@ export default class Admin {
     }
 
     /**
-     * Recent GitHub Actions workflow runs for 'api' and 'front' (the only repos
-     * GithubActionsService covers), newest first, `{ limit }` each (default 20, max 50).
+     * Recent GitHub Actions workflow runs for every repo GithubActionsService covers
+     * ('api', 'front', 'api-sdk-js'), newest first, `{ limit }` each (default 20, max 50).
      * Resolves `{ available: false }` (not an error) if the server has no GitHub token
-     * configured, per repo — check `repos.api.available` / `repos.front.available`
-     * separately rather than assuming both are up together.
+     * configured, per repo — check `repos.<name>.available` separately rather than
+     * assuming all three are up together.
      */
     actionsStatus({ limit } = {}) {
         return this.#client.get('/admin/actions/status', { limit });
+    }
+
+    /**
+     * One workflow run's jobs, each with its own steps — lets the dashboard show a run's
+     * breakdown inline instead of linking out to GitHub. Resolves `{ available: false }`
+     * the same way actionsStatus() does.
+     */
+    actionsJobs(repo, runId) {
+        return this.#client.get(`/admin/actions/${repo}/runs/${runId}/jobs`);
+    }
+
+    /**
+     * Re-runs one job. GitHub only allows this once the job has finished (queued/
+     * in_progress 4xx). Resolves `{ success: false, message }` rather than throwing on
+     * an unknown repo, missing token, or a failed GitHub request.
+     */
+    actionsRerunJob(repo, jobId) {
+        return this.#client.post(`/admin/actions/${repo}/jobs/${jobId}/rerun`);
     }
 
     static #buildUrl(baseUrl, path, params) {
