@@ -4,6 +4,15 @@ const config = {
     coverageDirectory: 'coverage',
     coverageProvider: 'v8',
 
+    // Enforced only when --coverage is used with the 'unit' project (the
+    // 'integration' project produces no coverage output) — see the coverage
+    // job in .github/workflows/npm-publish-github-packages.yml.
+    coverageThreshold: {
+        global: {
+            statements: 50,
+        },
+    },
+
     reporters: [
         'default',
         ['jest-html-reporter', {

@@ -4,16 +4,43 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch: # Manual trigger, for the coverage job below — publish only ever runs on push.
+  workflow_dispatch: # Manual trigger, to re-run coverage-gate on demand — publish only ever runs on push.
 
 permissions:
   id-token: write  # Required for OIDC
   contents: write  # Required for the auto-bump-and-push step below
 
 jobs:
+  # Mandatory gate on push: the 'unit' project's suite with coverage (unlike
+  # `tests` below, which only runs the affected subset and never blocks
+  # anything). `publish` depends on this, so a failing test or statement
+  # coverage below the tracked minimum (see jest.config.mjs's
+  # coverageThreshold) stops the publish before it starts. Coverage is
+  # partial by design — the 'integration' project produces none. Also
+  # runnable manually (workflow_dispatch) to re-check coverage on demand.
+  coverage-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '25'
+          package-manager-cache: false
+      - run: npm ci
+      - name: Run unit suite with coverage (fails below the tracked threshold)
+        run: npx jest --selectProjects unit --coverage --coverageReporters=html
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - run: aws s3 sync coverage "s3://${{ vars.AWS_COVERAGE_BUCKET }}/api-sdk-js/latest" --delete
+        if: always()
+
   publish:
-    # push only — a manual run is for the coverage job below, never re-publishes.
+    # push only — a manual run is for re-checking coverage-gate above, never re-publishes.
     if: github.event_name == 'push'
+    needs: coverage-gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -56,8 +83,9 @@ jobs:
 
   # The fast gate on every push: jest --changedSince walks the module graph from
   # the files this push touched and runs only the tests reaching them. 'unit'
-  # project only — independent of publish, same as `coverage`/`integration-tests`
-  # below; add `needs: tests` to `publish` if you'd rather it gate.
+  # project only — independent of publish (coverage-gate above is what
+  # actually blocks it); add `needs: tests` to `publish` if you'd rather this
+  # gate it too.
   tests:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -87,7 +115,8 @@ jobs:
   # actually reaches an integration test. Driven directly here instead of
   # through `make test` so the teardown step can run unconditionally via
   # `if: always()`. Independent of publish — a failure here never blocks a
-  # release; add `needs: integration-tests` to `publish` if you'd rather it gate.
+  # release; add `needs: integration-tests` to `publish` if you'd rather it gate
+  # (coverage-gate above, which does block, only covers the 'unit' project).
   integration-tests:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -159,29 +188,3 @@ jobs:
         if: always()
         run: make test-env-down
 
-  # Independent of publish — a failure here never blocks a release. Only the 'unit'
-  # project runs, so this coverage is partial (the 'integration' project above
-  # doesn't produce coverage output). Uploaded to S3 for the admin-only coverage
-  # viewer in front (CoverageReportController in api proxies it) — never baked
-  # into any deployed image, and this repo has no deployed image anyway.
-  coverage:
-    # Manual only — trigger via Actions > Publish Package > Run workflow.
-    # Was on every push; opt-in instead, same as api/front's coverage jobs.
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '25'
-          package-manager-cache: false
-      - run: npm ci
-      - run: npx jest --selectProjects unit --coverage --coverageReporters=html
-        continue-on-error: true
-      - uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
-      - run: aws s3 sync coverage "s3://${{ vars.AWS_COVERAGE_BUCKET }}/api-sdk-js/latest" --delete
-        if: always()
