@@ -260,6 +260,9 @@ export default class Users {
     /** Admin-only: lifts a hard block. */
     unblock(userId) { return this.#client.post(`/users/${userId}/unblock`); }
 
+    /** Sellers+: merges fromUserId's data into toUserId, then hard-blocks and blacklists fromUserId. */
+    unify(fromUserId, toUserId) { return this.#client.post(`/users/${fromUserId}/unify`, { to_id: toUserId }); }
+
     /**
      * GDPR erasure request — self-service or sales-and-above. `data` is either
      * `{ password, captcha_token }` or `{ webauthn_credential }`, same step-up
