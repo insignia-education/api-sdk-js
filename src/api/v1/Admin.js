@@ -20,6 +20,11 @@ export default class Admin {
         return this.#client.get('/admin/statistics/claude-usage', { from_date: fromDate, to_date: toDate });
     }
 
+    /** AWS cost per service for a date range — `{ available, services: { [serviceName]: amount }, total, currency }`. Resolves `{ available: false }` (not an error) if the configured AWS credential isn't Cost-Explorer-scoped. */
+    statisticsAwsCosts({ fromDate, toDate } = {}) {
+        return this.#client.get('/admin/statistics/aws-costs', { from_date: fromDate, to_date: toDate });
+    }
+
     /** Both rotating PayPal accounts' real available balance, keyed "1"/"2". Each resolves `{ available: false }` (not an error) if that account's "Transaction Search" feature isn't enabled in PayPal's dashboard yet. */
     statisticsPaypalBalance({ currency } = {}) {
         return this.#client.get('/admin/statistics/paypal-balance', { currency });
