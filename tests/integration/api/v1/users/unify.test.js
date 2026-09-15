@@ -10,8 +10,10 @@ import {
 // convention. Client#request() throws on non-2xx — error cases assert a rejected
 // promise, not a resolved {success,status}.
 
+// @gmail.com, not @example.com — UserCreateRequest validates email:rfc,dns, and
+// example.com has no MX record, so it fails DNS validation regardless of network access.
 const newUserPayload = (label) => ({
-    email: `sdk-unify-${label}-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`,
+    email: `sdk-unify-${label}-${Date.now()}-${Math.random().toString(36).slice(2)}@gmail.com`,
     password: 'Str0ng!Passw0rd',
     password_confirmation: 'Str0ng!Passw0rd',
     name: `SDK Unify ${label}`,
