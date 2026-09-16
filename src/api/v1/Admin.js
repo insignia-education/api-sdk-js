@@ -156,7 +156,8 @@ export default class Admin {
     }
 
     /**
-     * Recent GitHub Actions workflow runs for every repo GithubActionsService covers
+     * Recent GitHub Actions workflow runs — plus each repo's currently open pull requests
+     * (`pull_requests`, newest-updated first) — for every repo GithubActionsService covers
      * ('api', 'front', 'api-sdk-js'), newest first, `{ limit }` each (default 20, max 50).
      * Resolves `{ available: false }` (not an error) if the server has no GitHub token
      * configured, per repo — check `repos.<name>.available` separately rather than
