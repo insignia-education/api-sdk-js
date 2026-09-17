@@ -185,6 +185,19 @@ export default class Admin {
         return this.#client.post(`/admin/actions/${repo}/jobs/${jobId}/rerun`);
     }
 
+    /** Full review context for one pull request: body, files, comments/reviews and checks. */
+    actionsPullRequest(repo, pullNumber) {
+        return this.#client.get(`/admin/actions/${repo}/pulls/${pullNumber}`);
+    }
+
+    /** Merge the exact reviewed head SHA using GitHub's merge, squash or rebase strategy. */
+    actionsMergePullRequest(repo, pullNumber, { sha, mergeMethod }) {
+        return this.#client.post(`/admin/actions/${repo}/pulls/${pullNumber}/merge`, {
+            sha,
+            merge_method: mergeMethod,
+        });
+    }
+
     static #buildUrl(baseUrl, path, params) {
         const qs = new URLSearchParams(
             Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
