@@ -31,6 +31,8 @@ export default class Organizations {
             invite:  (userId) => client.post(`${base}/invite`, { user_id: userId }),
             /** Re-sends the invite email to a still-pending member with a fresh link. */
             resendInvite: (userId) => client.post(`${base}/${userId}/resend-invite`),
+            /** Removes a pending invite or accepted membership without deleting the user account. */
+            remove: (userId) => client.del(`${base}/${userId}`),
             /** Creates a real UserPayment for this member — same payload shape as users(id).payments().create(). */
             createPayment: (userId, data) => client.put(`${base}/${userId}/payments`, data),
         };
