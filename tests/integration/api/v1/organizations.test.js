@@ -66,6 +66,21 @@ describe('api/v1/organizations', () => {
         await expect(api.organizations.members(created.id).createPayment(created.user_id, {}))
             .rejects.toMatchObject({ status: 422 });
     });
+
+    test('members(id).remove(userId) | removes the membership but leaves the user available', async () => {
+        await loginAdmin();
+        const created = await api.organizations.create({ nice_name: 'SDK Test Org Remove Member' });
+        await api.organizations.members(created.id).invite(created.user_id);
+
+        await expect(api.organizations.members(created.id).remove(created.user_id)).resolves.toBe(true);
+        await expect(api.organizations.get(created.id)).resolves.toMatchObject({ id: created.id });
+        await expect(api.organizations.members(created.id).get()).resolves.toEqual([]);
+    });
+
+    test('members(id).remove(userId) | unauthenticated', async () => {
+        await logout();
+        await expect(api.organizations.members(1).remove(1)).rejects.toMatchObject({ status: 401 });
+    });
 });
 
 describe('api/v1/users/organization-owners', () => {
