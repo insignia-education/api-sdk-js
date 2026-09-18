@@ -21,6 +21,7 @@ import Hashes from './Hashes.js';
 import Insignias from './Insignias.js';
 import Languages from './Languages.js';
 import Blocks from './Blocks.js';
+import BugReports from './BugReports.js';
 import MailBlacklist from './MailBlacklist.js';
 import MailingLists from './MailingLists.js';
 import Offers from './Offers.js';
@@ -79,6 +80,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.languages            = new Languages(this);
         this.mailBlacklist        = new MailBlacklist(this);
         this.blocks               = new Blocks(this);
+        this.bugReports           = new BugReports(this);
         this.mailingLists         = new MailingLists(this);
         this.offers               = new Offers(this);
         this.organizations        = new Organizations(this);
