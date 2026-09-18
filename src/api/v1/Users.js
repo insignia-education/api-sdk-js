@@ -17,6 +17,8 @@ export default class Users {
     assignable()              { return this.#client.get('/users/assignable'); }
     /** Employee-only: users assignable as a course teacher (super-admins, admins, employees, teachers). */
     assignableTeachers()      { return this.#client.get('/users/assignable-teachers'); }
+    /** Employee-only: employee-tier users (super-admins, admins, employees), for the bug report "assign to" picker. */
+    assignableEmployees()     { return this.#client.get('/users/assignable-employees'); }
     /** Employee-only: paginated list of teacher-type users, for the admin Teachers view. */
     teachers({ page = 1, perPage = 15 } = {}) {
         return this.#client.get('/users/teachers', { page, per_page: perPage });
