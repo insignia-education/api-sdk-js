@@ -204,6 +204,22 @@ export default class Users {
         };
     }
 
+    /**
+     * Logged-in devices/sessions. Rows are only ever created by the auth flow
+     * itself (a real login/refresh) — this is read + revoke, never create.
+     */
+    devices(userId) {
+        const base = `/users/${userId}/devices`;
+        const client = this.#client;
+        return {
+            get: () => client.get(base),
+            /** Revoke one device by its id — that device's token stops being accepted immediately. */
+            delete: (id) => client.del(`${base}/${id}`),
+            /** "Log out all other devices" — keeps the caller's own current session intact. */
+            deleteAll: () => client.del(base),
+        };
+    }
+
     experiences(userId) {
         const base = `/users/${userId}/experiences`;
         const client = this.#client;
