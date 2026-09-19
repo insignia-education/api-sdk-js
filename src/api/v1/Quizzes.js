@@ -20,6 +20,8 @@ export default class Quizzes {
     create(data)    { return this.#client.put('/quizzes', data); }
     edit(id, data)  { return this.#client.patch(`/quizzes/${id}`, data); }
     delete(id)      { return this.#client.del(`/quizzes/${id}`); }
+    /** Undoes delete() — brings a soft-deleted quiz back into the normal list. */
+    restore(id)     { return this.#client.post(`/quizzes/${id}/restore`); }
 
     questions(quizId) {
         const client = this.#client;
@@ -30,6 +32,8 @@ export default class Quizzes {
             create: (data)      => client.put(base, data),
             edit:   (id, data)  => client.patch(`${base}/${id}`, data),
             delete: (id)        => client.del(`${base}/${id}`),
+            /** Undoes delete() — brings a soft-deleted question back into the normal list. */
+            restore: (id)       => client.post(`${base}/${id}/restore`),
             answers: (questionId) => {
                 const aBase = `${base}/${questionId}/answers`;
                 return {
@@ -37,6 +41,8 @@ export default class Quizzes {
                     create: (data)      => client.put(aBase, data),
                     edit:   (id, data)  => client.patch(`${aBase}/${id}`, data),
                     delete: (id)        => client.del(`${aBase}/${id}`),
+                    /** Undoes delete() — brings a soft-deleted answer back into the normal list. */
+                    restore: (id)       => client.post(`${aBase}/${id}/restore`),
                 };
             },
             /** Grading-rubric criteria for one question — shown to the teacher while grading an open/audio/document/link answer. */
@@ -47,6 +53,8 @@ export default class Quizzes {
                     create: (data)      => client.put(cBase, data),
                     edit:   (id, data)  => client.patch(`${cBase}/${id}`, data),
                     delete: (id)        => client.del(`${cBase}/${id}`),
+                    /** Undoes delete() — brings a soft-deleted criteria row back into the normal list. */
+                    restore: (id)       => client.post(`${cBase}/${id}/restore`),
                 };
             },
         };
