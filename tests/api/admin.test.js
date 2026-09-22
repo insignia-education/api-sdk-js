@@ -1,5 +1,28 @@
 import Admin from '../../src/api/v1/Admin.js';
 
+describe('Admin quizzesUngraded', () => {
+    test('passes course/search/pagination filters through', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
+        const admin = new Admin(client);
+
+        await expect(admin.quizzesUngraded({ courseId: 5, search: 'jane', page: 2, perPage: 10 }))
+            .resolves.toEqual({ data: [] });
+        expect(client.get).toHaveBeenCalledWith('/admin/quizzes/ungraded', {
+            course_id: 5, search: 'jane', page: 2, per_page: 10,
+        });
+    });
+
+    test('omits optional filters when not given', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
+        const admin = new Admin(client);
+
+        await admin.quizzesUngraded();
+        expect(client.get).toHaveBeenCalledWith('/admin/quizzes/ungraded', {
+            course_id: undefined, search: undefined, page: undefined, per_page: undefined,
+        });
+    });
+});
+
 describe('Admin GitHub pull request methods', () => {
     test('fetches pull request review context', async () => {
         const client = { get: jest.fn().mockResolvedValue({ number: 104 }) };

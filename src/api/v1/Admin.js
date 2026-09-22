@@ -10,6 +10,19 @@ export default class Admin {
         return this.#client.get('/admin/courses/current-dates', { page, per_page: perPage });
     }
 
+    /**
+     * Platform-wide "needs teacher correction" queue — every quiz attempt still
+     * awaiting a teacher's grade, across every course/teacher (unlike
+     * TeacherDashboard's ungraded-quiz endpoints, which are scoped to one
+     * teacher's own courses). Optional `courseId` narrows to one course,
+     * `search` matches the student's name or email.
+     */
+    quizzesUngraded({ courseId, search, page, perPage } = {}) {
+        return this.#client.get('/admin/quizzes/ungraded', {
+            course_id: courseId, search, page, per_page: perPage,
+        });
+    }
+
     /** Date-range sales report: totals by status (pending/approved/rejected), and the same split by course, payment method and currency. */
     statisticsSales({ fromDate, toDate } = {}) {
         return this.#client.get('/admin/statistics/sales', { from_date: fromDate, to_date: toDate });
