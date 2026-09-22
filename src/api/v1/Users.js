@@ -76,6 +76,12 @@ export default class Users {
                 fd.append('file', file);
                 return client.upload(`${base}/${courseId}/certificate/upload`, fd);
             },
+            /**
+             * Employee-only: invalidate just this enrollment's certificate PDF on CloudFront —
+             * for when the S3 object was replaced (e.g. a legacy-certificate restore) but the
+             * CDN is still serving the old cached copy. Returns { invalidated: true }.
+             */
+            invalidateCertificateCache: (courseId) => client.post(`${base}/${courseId}/certificate/invalidate-cache`),
         };
     }
 
