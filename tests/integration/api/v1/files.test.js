@@ -52,4 +52,16 @@ describe('api/v1/files', () => {
                 expect(response['directory']).toBe('/');
             });
     });
+
+    // No real CloudFront distribution is configured for this test stack, so this only
+    // asserts the request succeeds and echoes back the (sandboxed) directory — see
+    // FileManager::invalidateCloudFrontPath()'s no-op-without-a-distribution behavior.
+    test('invalidateCache | authenticated', async () => {
+        await loginAdmin();
+        await api.files.invalidateCache({ directory: '/' })
+            .then(response => {
+                expect(response['invalidated']).toBe(true);
+                expect(response['directory']).toBe('/');
+            });
+    });
 });
