@@ -27,4 +27,8 @@ export default class Files {
      *  Returns a pending FileZipRequest immediately; the zip is built asynchronously and the
      *  requester is notified when it's ready. */
     zip(body)                   { return this.#client.post('/files/zip', body); }
+
+    /** Invalidate CloudFront's cache for every object under a directory (recursive).
+     *  body: { organization_id, directory }. Returns { directory, invalidated: true }. */
+    invalidateCache(body)       { return this.#client.post('/files/invalidate-cache', body); }
 }
