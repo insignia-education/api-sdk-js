@@ -1,4 +1,5 @@
 import InsigniaApi from '../index.js';
+import AiGradingSettings from './AiGradingSettings.js';
 import Admin from './Admin.js';
 import Auth from './Auth.js';
 import Accounts from './Accounts.js';
@@ -57,6 +58,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         let url = InsigniaApiV1._resolve(baseUrl);
         super(url);
 
+        this.aiGradingSettings    = new AiGradingSettings(this);
         this.admin                = new Admin(this);
         this.auth                 = new Auth(this);
         this.accounts             = new Accounts(this);
