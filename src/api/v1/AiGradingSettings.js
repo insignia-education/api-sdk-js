@@ -10,4 +10,7 @@ export default class AiGradingSettings {
 
     /** Admin-only: update the provider/model choices. */
     edit(data) { return this.#client.patch('/ai-grading-settings', data); }
+
+    /** Admin-only: live model choices (each provider's own catalog, cached) plus pricing, for the settings page's dropdowns. */
+    models() { return this.#client.get('/ai-grading-settings/models'); }
 }
