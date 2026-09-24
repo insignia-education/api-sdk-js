@@ -45,3 +45,29 @@ describe('Admin GitHub pull request methods', () => {
         });
     });
 });
+
+describe('Admin reportsOpenAiUsage', () => {
+    test('passes date filters through', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ available: true }) };
+        const admin = new Admin(client);
+
+        await expect(admin.reportsOpenAiUsage({ fromDate: '2026-09-01', toDate: '2026-09-24' }))
+            .resolves.toEqual({ available: true });
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/openai-usage', {
+            from_date: '2026-09-01',
+            to_date: '2026-09-24',
+        });
+    });
+
+    test('supports the API defaults when dates are omitted', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ available: false }) };
+        const admin = new Admin(client);
+
+        await admin.reportsOpenAiUsage();
+
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/openai-usage', {
+            from_date: undefined,
+            to_date: undefined,
+        });
+    });
+});

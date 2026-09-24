@@ -163,6 +163,13 @@ export default class Admin {
         });
     }
 
+    /** Organization-wide OpenAI completion usage, model breakdown and spend for a date range. Resolves `{ available: false }` when the API server has no valid OpenAI Admin API key. */
+    reportsOpenAiUsage({ fromDate, toDate } = {}) {
+        return this.#client.get('/admin/reports/openai-usage', {
+            from_date: fromDate, to_date: toDate,
+        });
+    }
+
     /** Direct link to a repo's CI-generated test-coverage HTML report ('api' | 'front' | 'api-sdk-js') — open with <a href>/<iframe src>, cookie-authenticated, not fetch. */
     coverageUrl(repo) {
         return `${this.#client.baseUrl}/admin/coverage/${repo}/`;
