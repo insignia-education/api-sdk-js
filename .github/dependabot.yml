@@ -9,3 +9,14 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # @babel/preset-env@8.x requires @babel/core@^8.0.0, which conflicts with the
+      # 7.x @babel/core resolved elsewhere in this tree (babel-jest's own dependency),
+      # breaking `npm ci` — and therefore every publish, since coverage-gate runs it
+      # first. This exact bump broke CI twice already (fixed once in #25, then
+      # dependabot proposed the identical bump again and it got merged again in #31,
+      # blocking every publish from then until this ignore rule + the revert in the
+      # same PR). Remove this only once @babel/core is upgraded to 8.x too, everywhere
+      # it's a peer dependency in this tree, not just here.
+      - dependency-name: "@babel/preset-env"
+        versions: [">=8.0.0"]
