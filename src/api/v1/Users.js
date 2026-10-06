@@ -226,6 +226,24 @@ export default class Users {
         };
     }
 
+    /**
+     * Guided-tutorial status per user. Each tutorial is identified by a code
+     * (e.g. "dashboard-student") and is `pending` until the user finishes or skips
+     * it, then `viewed` — so the front can avoid showing the same tour twice.
+     */
+    tutorials(userId) {
+        const base = `/users/${userId}/tutorials`;
+        const client = this.#client;
+        return {
+            /** Every known tutorial code with its status: [{ code, status, viewed_at }]. */
+            get: () => client.get(base),
+            /** One tutorial's { code, status: 'pending'|'viewed', viewed_at }. Unknown code → 404. */
+            status: (code) => client.get(`${base}/${code}`),
+            /** Mark a tutorial as viewed (idempotent). Unknown code → 404. */
+            markViewed: (code) => client.post(`${base}/${code}/viewed`),
+        };
+    }
+
     experiences(userId) {
         const base = `/users/${userId}/experiences`;
         const client = this.#client;
