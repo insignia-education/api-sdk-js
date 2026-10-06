@@ -71,3 +71,17 @@ describe('Admin reportsOpenAiUsage', () => {
         });
     });
 });
+
+describe('Admin student demographics statistics', () => {
+    test.each([
+        ['statisticsStudentsByCourse', '/admin/statistics/students-by-course'],
+        ['statisticsStudentsByBirthCountry', '/admin/statistics/students-by-birth-country'],
+        ['statisticsStudentsByCurrentCountry', '/admin/statistics/students-by-current-country'],
+        ['statisticsStudentsByAgeGroup', '/admin/statistics/students-by-age-group'],
+    ])('%s GETs %s', async (method, path) => {
+        const client = { get: jest.fn().mockResolvedValue([]) };
+
+        await expect(new Admin(client)[method]()).resolves.toEqual([]);
+        expect(client.get).toHaveBeenCalledWith(path);
+    });
+});
