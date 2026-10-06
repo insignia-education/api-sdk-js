@@ -28,6 +28,26 @@ export default class Admin {
         return this.#client.get('/admin/statistics/sales', { from_date: fromDate, to_date: toDate });
     }
 
+    /** Enrolled (non-teacher) students per course, biggest first — `[{ course_id, title, students }]`. Courses with no students are omitted. */
+    statisticsStudentsByCourse() {
+        return this.#client.get('/admin/statistics/students-by-course');
+    }
+
+    /** Enrolled students per birth country, biggest first — `[{ country_id, title, cod, students }]`. Students with no birth country set share one row with `country_id: null`. */
+    statisticsStudentsByBirthCountry() {
+        return this.#client.get('/admin/statistics/students-by-birth-country');
+    }
+
+    /** Same as statisticsStudentsByBirthCountry(), grouped by the students' current country instead. */
+    statisticsStudentsByCurrentCountry() {
+        return this.#client.get('/admin/statistics/students-by-current-country');
+    }
+
+    /** Enrolled students per age group (whole years as of today) — always all eight groups, in order, zero-filled: `[{ group: '0-17' | '18-24' | '25-34' | '35-44' | '45-54' | '55-64' | '65+' | 'unknown', students }]`. `unknown` = no birth date. */
+    statisticsStudentsByAgeGroup() {
+        return this.#client.get('/admin/statistics/students-by-age-group');
+    }
+
     /** Claude (Anthropic) token usage/spend for a date range, plus account balance. Each half resolves `{ available: false }` (not an error) when its required config (admin key / account balance) isn't set. */
     statisticsClaudeUsage({ fromDate, toDate } = {}) {
         return this.#client.get('/admin/statistics/claude-usage', { from_date: fromDate, to_date: toDate });
