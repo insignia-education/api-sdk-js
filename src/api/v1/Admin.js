@@ -48,7 +48,7 @@ export default class Admin {
         return this.#client.get('/admin/statistics/students-by-age-group');
     }
 
-    /** Average + count of the course survey ratings — `{ teacher, content, platform, ux, overall }`, each `{ average, count }` (`average` is `null` when nobody rated it). Counts are enrollments that answered that rating; `overall.average` spans every rating given and `overall.count` is enrollments with at least one. Teacher enrollments and deleted ones are excluded. */
+    /** Average + count of the course survey ratings — `{ teacher, content, platform, ux, overall }`, each `{ average, count }` (`average` is `null` when nobody rated it). Counts are enrollments that answered that rating; `overall.average` spans every rating given and `overall.count` is enrollments with at least one. Teacher enrollments and deleted ones are excluded. `by_course` is `[{ course_id, title, teacher, content, platform, ux, overall }]` (same `{ average, count }` shape) for courses with at least one rating, best overall average first. */
     statisticsCourseRatings() {
         return this.#client.get('/admin/statistics/course-ratings');
     }
