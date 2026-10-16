@@ -86,3 +86,24 @@ describe('Admin student demographics statistics', () => {
         expect(client.get).toHaveBeenCalledWith(path);
     });
 });
+
+describe('Admin sales-by-seller report', () => {
+    test('reportsSalesBySeller passes date range and pagination', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
+
+        await new Admin(client).reportsSalesBySeller({ fromDate: '2026-10-01', toDate: '2026-10-16', page: 2, perPage: 10 });
+
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/sales-by-seller', {
+            from_date: '2026-10-01', to_date: '2026-10-16', page: 2, per_page: 10,
+        });
+    });
+
+    test('reportsSalesBySellerExportUrl builds the download link', () => {
+        const url = new Admin({ baseUrl: 'https://api.test/api/v1' })
+            .reportsSalesBySellerExportUrl({ fromDate: '2026-10-01', toDate: '2026-10-16', format: 'xlsx' });
+
+        expect(url).toContain('/admin/reports/sales-by-seller/export');
+        expect(url).toContain('format=xlsx');
+        expect(url).toContain('from_date=2026-10-01');
+    });
+});
