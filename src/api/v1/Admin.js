@@ -23,7 +23,7 @@ export default class Admin {
         });
     }
 
-    /** Date-range sales report: totals by status (pending/approved/rejected), and the same split by course, payment method and currency. */
+    /** Date-range sales report: totals by status (pending/approved/rejected), and the same split by course, payment method, currency, owner and seller (`by_seller`: `[{ seller: { id|null, name, username }, pending, approved, rejected, total }]`). */
     statisticsSales({ fromDate, toDate } = {}) {
         return this.#client.get('/admin/statistics/sales', { from_date: fromDate, to_date: toDate });
     }
@@ -184,6 +184,20 @@ export default class Admin {
     /** Direct download link for the teacher-stats report (format: 'csv' | 'xlsx'). */
     reportsTeacherStatsExportUrl({ fromDate, toDate, format = 'csv' } = {}) {
         return Admin.#buildUrl(this.#client.baseUrl, '/admin/reports/teacher-stats/export', {
+            from_date: fromDate, to_date: toDate, format,
+        });
+    }
+
+    /** Paginated per-seller sales report for a date range: line count and base-currency amount per status (pending/approved/rejected) and in total, biggest first. Payments with no seller are one row with `seller_id: null`. */
+    reportsSalesBySeller({ fromDate, toDate, page, perPage } = {}) {
+        return this.#client.get('/admin/reports/sales-by-seller', {
+            from_date: fromDate, to_date: toDate, page, per_page: perPage,
+        });
+    }
+
+    /** Direct download link for the sales-by-seller report (format: 'csv' | 'xlsx'). */
+    reportsSalesBySellerExportUrl({ fromDate, toDate, format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/reports/sales-by-seller/export', {
             from_date: fromDate, to_date: toDate, format,
         });
     }
