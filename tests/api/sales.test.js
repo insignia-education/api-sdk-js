@@ -4,14 +4,14 @@ describe('Sales', () => {
     test('myClients() GETs /sales/my-clients with page params', async () => {
         const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
 
-        await expect(new Sales(client).myClients({ page: 2, perPage: 10 })).resolves.toEqual({ data: [] });
-        expect(client.get).toHaveBeenCalledWith('/sales/my-clients', { page: 2, per_page: 10 });
+        await expect(new Sales(client).myClients({ page: 2, perPage: 10, q: 'ana' })).resolves.toEqual({ data: [] });
+        expect(client.get).toHaveBeenCalledWith('/sales/my-clients', { page: 2, per_page: 10, q: 'ana' });
     });
 
     test('myClients() works with no arguments', async () => {
         const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
 
         await new Sales(client).myClients();
-        expect(client.get).toHaveBeenCalledWith('/sales/my-clients', { page: undefined, per_page: undefined });
+        expect(client.get).toHaveBeenCalledWith('/sales/my-clients', { page: undefined, per_page: undefined, q: undefined });
     });
 });
