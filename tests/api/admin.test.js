@@ -78,6 +78,7 @@ describe('Admin student demographics statistics', () => {
         ['statisticsStudentsByBirthCountry', '/admin/statistics/students-by-birth-country'],
         ['statisticsStudentsByCurrentCountry', '/admin/statistics/students-by-current-country'],
         ['statisticsStudentsByAgeGroup', '/admin/statistics/students-by-age-group'],
+        ['statisticsCourseRatings', '/admin/statistics/course-ratings'],
     ])('%s GETs %s', async (method, path) => {
         const client = { get: jest.fn().mockResolvedValue([]) };
 
