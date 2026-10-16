@@ -16,6 +16,11 @@ export default class Sales {
         return this.#client.get('/sales/my-sales', { page, per_page: perPage });
     }
 
+    /** Paginated list of the current seller's clients — users whose `seller_id` is the seller (`id, name, username, email, phone, created_at`). */
+    myClients({ page, perPage } = {}) {
+        return this.#client.get('/sales/my-clients', { page, per_page: perPage });
+    }
+
     /** Sellers and above: users with all 3 KYC files uploaded but not yet verified. */
     kycPending() { return this.#client.get('/sales/kyc-pending'); }
 

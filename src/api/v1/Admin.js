@@ -48,6 +48,11 @@ export default class Admin {
         return this.#client.get('/admin/statistics/students-by-age-group');
     }
 
+    /** Average + count of the course survey ratings — `{ teacher, content, platform, ux, overall }`, each `{ average, count }` (`average` is `null` when nobody rated it). Counts are enrollments that answered that rating; `overall.average` spans every rating given and `overall.count` is enrollments with at least one. Teacher enrollments and deleted ones are excluded. */
+    statisticsCourseRatings() {
+        return this.#client.get('/admin/statistics/course-ratings');
+    }
+
     /** Claude (Anthropic) token usage/spend for a date range, plus account balance. Each half resolves `{ available: false }` (not an error) when its required config (admin key / account balance) isn't set. */
     statisticsClaudeUsage({ fromDate, toDate } = {}) {
         return this.#client.get('/admin/statistics/claude-usage', { from_date: fromDate, to_date: toDate });
