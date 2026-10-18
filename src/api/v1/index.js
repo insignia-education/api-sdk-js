@@ -17,6 +17,7 @@ import Dashboard from './Dashboard.js';
 import EducationCenter from './EducationCenter.js';
 import Employee from './Employee.js';
 import Files from './Files.js';
+import Games from './Games.js';
 import Forums from './Forums.js';
 import Hashes from './Hashes.js';
 import Insignias from './Insignias.js';
@@ -88,6 +89,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.organizations        = new Organizations(this);
         this.paymentMethods       = new PaymentMethods(this);
         this.payments             = new Payments(this);
+        this.games                = new Games(this);
         this.quizzes              = new Quizzes(this);
         this.sales                = new Sales(this);
         this.search               = new Search(this);

@@ -276,6 +276,30 @@ await v1.organizations.create(data);
 await v1.organizations.edit(1, data);
 ```
 
+### Games
+
+```js
+await v1.games.get();                         // paginated: get(null, { search, page, perPage })
+await v1.games.get(1);
+await v1.games.create({ title: 'Quiz night', type: 'kahoot' });   // type: kahoot | jeopardy
+await v1.games.edit(1, { status: 'lobby' });  // draft | lobby | in_progress | finished
+await v1.games.delete(1);
+await v1.games.restore(1);
+await v1.games.players(1);
+await v1.games.join(1);
+await v1.games.removePlayer(1, 5);
+await v1.games.regenerateShare(1);            // new share_token; old link stops working
+await v1.games.shared(token).get();           // public — no login needed
+await v1.games.shared(token).join();          // logged-in user
+await v1.games.shared(token).guestJoin('Ana'); // non-logged user, needs allow_guests; returns guest_token
+await v1.games.shared(token).guestQuestions(guestToken);
+await v1.games.questions(1).get();
+await v1.games.questions(1).create(data);
+await v1.games.questions(1).edit(2, { enabled: false });
+await v1.games.questions(1).delete(2);
+await v1.games.questions(1).restore(2);
+```
+
 ### Quizzes
 
 ```js
