@@ -288,6 +288,11 @@ await v1.games.restore(1);
 await v1.games.players(1);
 await v1.games.join(1);
 await v1.games.removePlayer(1, 5);
+await v1.games.regenerateShare(1);            // new share_token; old link stops working
+await v1.games.shared(token).get();           // public — no login needed
+await v1.games.shared(token).join();          // logged-in user
+await v1.games.shared(token).guestJoin('Ana'); // non-logged user, needs allow_guests; returns guest_token
+await v1.games.shared(token).guestQuestions(guestToken);
 await v1.games.questions(1).get();
 await v1.games.questions(1).create(data);
 await v1.games.questions(1).edit(2, { enabled: false });

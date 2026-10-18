@@ -72,4 +72,36 @@ describe('api/v1/games', () => {
         expect(visible[0].options[0].is_correct).toBeUndefined();
         await expect(api.games.questions(gameId).create({ question: 'x' })).rejects.toMatchObject({ status: 403 });
     });
+
+    test('share link | public info, guests and logged-in join', async () => {
+        await loginAdmin();
+        const game = await api.games.create({ title: 'Shared game', type: 'jeopardy' });
+        const other = game.id;
+        try {
+            expect(game.share_token).toBeDefined();
+            await api.games.edit(other, { status: 'lobby' });
+
+            await logout().catch(() => {});
+            const info = await api.games.shared(game.share_token).get();
+            expect(info.title).toBe('Shared game');
+            expect(info.share_token).toBeUndefined();
+            await expect(api.games.shared('nope').get()).rejects.toMatchObject({ status: 404 });
+            await expect(api.games.shared(game.share_token).guestJoin('Ana')).rejects.toMatchObject({ status: 403 });
+
+            await loginAdmin();
+            await api.games.edit(other, { allow_guests: true });
+            await logout().catch(() => {});
+            const guest = await api.games.shared(game.share_token).guestJoin('Ana');
+            expect(guest.guest_token).toBeDefined();
+            await expect(api.games.shared(game.share_token).guestJoin('')).rejects.toMatchObject({ status: 422 });
+            expect(await api.games.shared(game.share_token).guestQuestions(guest.guest_token)).toEqual([]);
+            await expect(api.games.shared(game.share_token).guestQuestions('wrong')).rejects.toMatchObject({ status: 403 });
+
+            await loginCustomer();
+            expect((await api.games.shared(game.share_token).join()).role).toBe('player');
+        } finally {
+            await loginAdmin();
+            await api.games.delete(other).catch(() => {});
+        }
+    });
 });
