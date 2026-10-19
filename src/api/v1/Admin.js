@@ -227,6 +227,14 @@ export default class Admin {
     }
 
     /**
+     * One repo's slice of actionsStatus() — `{ available, runs, pull_requests, ... }` — so the
+     * dashboard can request every repo in parallel rather than waiting on the combined call.
+     */
+    actionsRepoStatus(repo, { limit } = {}) {
+        return this.#client.get(`/admin/actions/${repo}/status`, { limit });
+    }
+
+    /**
      * One workflow run's jobs, each with its own steps — lets the dashboard show a run's
      * breakdown inline instead of linking out to GitHub. Resolves `{ available: false }`
      * the same way actionsStatus() does.
