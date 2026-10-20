@@ -201,6 +201,8 @@ await v1.courses.levels(1).get();
 await v1.courses.levels(1).lessons(2).get();
 await v1.courses.levels(1).lessons(2).materials(3).get();
 await v1.courses.levels(1).lessons(2).materials(3).create(data);
+await v1.courses.levels(1).lessons(2).audioTracks(3).create({ language_id: 1, url });
+await v1.courses.levels(1).lessons(2).subtitles(3).create({ language_id: 1, url });
 ```
 
 ### Currencies

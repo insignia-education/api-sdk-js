@@ -135,6 +135,29 @@ export default class Courses {
                             delete: (id)        => client.del(`${mBase}/${id}`),
                         };
                     },
+                    /**
+                     * Dubbed audio tracks, one per language (`language_id`). The API rejects a
+                     * track whose length differs from the lesson video's.
+                     */
+                    audioTracks: (lessonId) => {
+                        const tBase = `${lBase}/${lessonId}/audio-tracks`;
+                        return {
+                            get:    () => client.get(tBase),
+                            create: (data)      => client.put(tBase, data),
+                            edit:   (id, data)  => client.patch(`${tBase}/${id}`, data),
+                            delete: (id)        => client.del(`${tBase}/${id}`),
+                        };
+                    },
+                    /** WebVTT subtitle files, one per language (`language_id`). */
+                    subtitles: (lessonId) => {
+                        const sBase = `${lBase}/${lessonId}/subtitles`;
+                        return {
+                            get:    () => client.get(sBase),
+                            create: (data)      => client.put(sBase, data),
+                            edit:   (id, data)  => client.patch(`${sBase}/${id}`, data),
+                            delete: (id)        => client.del(`${sBase}/${id}`),
+                        };
+                    },
                 };
             },
         };
