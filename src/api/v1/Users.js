@@ -93,6 +93,16 @@ export default class Users {
 
     courseNotes(userId)    { return this.#nested(userId, 'course-notes'); }
 
+    /** Admin-only, seller-type users only: the 12 monthly sales goals for a year (`{ month, amount }[]`). edit() upserts the given months. */
+    salesGoals(userId) {
+        const base = `/users/${userId}/sales-goals`;
+        const client = this.#client;
+        return {
+            get:  (year = new Date().getFullYear()) => client.get(base, { year }),
+            edit: (year, goals)                     => client.put(base, { year, goals }),
+        };
+    }
+
     /** Additional social/contact links (Facebook, WhatsApp, YouTube, etc.) — each row's contact_id points at a ContactTypes.get() entry. */
     contacts(userId)       { return this.#nested(userId, 'contacts'); }
 
