@@ -8,6 +8,6 @@ export default class CompanySettings {
     /** Admin-only: company name/address shown in email footers. */
     get() { return this.#client.get('/company-settings'); }
 
-    /** Admin-only: update company name/address and `monthly_sales_goal` (the company target shown in the daily sales email). */
+    /** Admin-only: update company name/address. */
     edit(data) { return this.#client.patch('/company-settings', data); }
 }
