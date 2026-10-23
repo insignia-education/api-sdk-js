@@ -25,4 +25,18 @@ describe('Users', () => {
         await tutorials.markViewed('dashboard-student');
         expect(client.post).toHaveBeenCalledWith('/users/7/tutorials/dashboard-student/viewed');
     });
+
+    test('salesGoals(id) reads a year of goals and upserts months', async () => {
+        const client = {
+            get: jest.fn().mockResolvedValue([]),
+            put: jest.fn().mockResolvedValue([]),
+        };
+        const goals = new Users(client).salesGoals(7);
+
+        await goals.get(2026);
+        expect(client.get).toHaveBeenCalledWith('/users/7/sales-goals', { year: 2026 });
+
+        await goals.edit(2026, [{ month: 1, amount: 500 }]);
+        expect(client.put).toHaveBeenCalledWith('/users/7/sales-goals', { year: 2026, goals: [{ month: 1, amount: 500 }] });
+    });
 });
