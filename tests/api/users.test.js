@@ -9,6 +9,13 @@ describe('Users', () => {
         expect(client.get).toHaveBeenCalledWith('/users/assignable-employees');
     });
 
+    test('telegram(id).purge() posts to the admin purge endpoint', async () => {
+        const client = { post: jest.fn().mockResolvedValue({ queued: true }) };
+
+        await new Users(client).telegram(7).purge();
+        expect(client.post).toHaveBeenCalledWith('/users/7/telegram/purge');
+    });
+
     test('tutorials(id) lists, reads one by code, and marks viewed', async () => {
         const client = {
             get: jest.fn().mockResolvedValue([]),

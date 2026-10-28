@@ -387,7 +387,7 @@ export default class Users {
         return this.#client.post(`/users/emails/verify/${hash}`);
     }
 
-    /** Verified Telegram account linking for this user. Owner or staff only. */
+    /** Verified Telegram account linking for this user. Owner or staff only (purge: admins only). */
     telegram(userId) {
         const base = `/users/${userId}/telegram`;
         const client = this.#client;
@@ -398,6 +398,8 @@ export default class Users {
             connect: (data) => client.post(`${base}/connect`, data),
             /** Undoes connect()/linkToken() — clears telegram/telegram_chat_id/telegram_verified_at, so the account reads as never-connected. */
             disconnect: () => client.del(base),
+            /** Admin-only: removes this user from every Telegram group and deletes all their messages there. Runs in the background — resolves { queued: true } right away; 422 if Telegram isn't connected. */
+            purge: () => client.post(`${base}/purge`),
         };
     }
 }
