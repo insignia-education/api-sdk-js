@@ -387,6 +387,8 @@ await v1.users.courses(1).get();
 await v1.users.courseNotes(1).get();
 await v1.users.quizzes(1).get();
 await v1.users.sessions(1).get();
+await v1.users.sessions(1).rate(10, { clarity_rating: 5, correction_rating: 4, motivation_rating: 5 });
+await v1.users.topRatedTeachers();
 await v1.users.surveys(1).get();
 await v1.users.cart(1).get();
 

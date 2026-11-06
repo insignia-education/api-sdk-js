@@ -160,7 +160,21 @@ export default class Users {
              * session starts; a seller-and-above may reset any time.
              */
             reset:  (id)        => client.post(`${base}/${id}/reset`),
+            /**
+             * Student rates a finished session they attended — one-time, locked afterwards.
+             * `{ clarity_rating, correction_rating, motivation_rating }` (clear explanations / helpful respectful
+             * corrections / motivates speaking English), each an integer 1-5. Only the student themself
+             * (not staff) can submit it. 422 if the session hasn't ended / has no teacher, 403 if the
+             * student wasn't marked present, 409 if already rated. The booking list rows carry the
+             * submitted rating as `my_rating` (or null).
+             */
+            rate:   (id, data)  => client.post(`${base}/${id}/rating`, data),
         };
+    }
+
+    /** Top 3 teachers by overall average session rating (all time), visible to any authenticated user: `[{ teacher_id, name, teacher_average, ratings }]` (`teacher_average` = mean of the three questions). */
+    topRatedTeachers() {
+        return this.#client.get('/teachers/top-rated');
     }
 
     surveys(userId)        { return this.#nested(userId, 'surveys'); }
