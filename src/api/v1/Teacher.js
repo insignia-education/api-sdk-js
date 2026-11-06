@@ -54,8 +54,10 @@ export default class Teacher {
             courseDates: () => this.#client.get(`${base}/course-dates`),
             /** All sessions for one CourseDate, each with a `students` roster ({id, name, present}). */
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
-            /** Enrolled roster ({id, name, email}) for one CourseDate, read straight off enrollment — shows up even before any session has been synced. Read-only: does not move students between dates. */
+            /** Enrolled roster ({id, name, email, rank}, ranked first — unranked last) for one CourseDate, read straight off enrollment — shows up even before any session has been synced. Read-only: does not move students between dates. */
             courseDateStudents: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students`),
+            /** Save the teacher's ranking of one CourseDate's students: `studentIds` in order, first = rank 1. Returns the re-ranked roster ({id, name, email, rank}). Ids not enrolled → 422. */
+            rankCourseDateStudents: (courseDateId, studentIds) => this.#client.put(`${base}/course-dates/${courseDateId}/students/ranking`, { student_ids: studentIds }),
             /** One student's quiz attempts in this CourseDate's course, every one of them - not just needs_teacher_correction=1 (auto-graded ones never show up in the "Quizzes por corregir" surfaces below). Each row carries `quiz.needs_teacher_correction`, `level`/`lesson`, `final_score_percentage`; filter by level/lesson client-side. */
             courseDateStudentQuizzes: (courseDateId, studentId) => this.#client.get(`${base}/course-dates/${courseDateId}/students/${studentId}/quizzes`),
             /** { url, pending } — the zip archive of this group's course materials, or pending:true while it's (re)building. */
