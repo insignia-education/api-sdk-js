@@ -53,6 +53,11 @@ export default class Admin {
         return this.#client.get('/admin/statistics/course-ratings');
     }
 
+    /** Teachers ranked by average session rating (best first): `[{ teacher_id, name, teacher_average, clarity_average, correction_average, motivation_average, ratings }]` (`teacher_average` = mean of the three). `from`/`to` (`YYYY-MM-DD`, both optional) limit it to ratings made in that period; omit both for all time. Employee-only. */
+    statisticsTeacherRatings({ from, to } = {}) {
+        return this.#client.get('/admin/statistics/teacher-ratings', { from, to });
+    }
+
     /** Claude (Anthropic) token usage/spend for a date range, plus account balance. Each half resolves `{ available: false }` (not an error) when its required config (admin key / account balance) isn't set. */
     statisticsClaudeUsage({ fromDate, toDate } = {}) {
         return this.#client.get('/admin/statistics/claude-usage', { from_date: fromDate, to_date: toDate });
