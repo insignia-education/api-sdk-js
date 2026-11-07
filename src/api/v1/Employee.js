@@ -22,6 +22,8 @@ export default class Employee {
             courseDateStudents: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students`),
             /** One enrolled student's quiz attempts in this course_date's course (any teacher's date) — same shape as Teacher.dashboard().courseDateStudentQuizzes(). Grade them with Users.quizzes(studentId).detail()/grade(). Not enrolled → 403. */
             courseDateStudentQuizzes: (courseDateId, studentId) => this.#client.get(`${base}/course-dates/${courseDateId}/students/${studentId}/quizzes`),
+            /** Per-student progress for any course_date, keyed by student id — same shape as Teacher.dashboard().courseDateStudentOverviews(). */
+            courseDateStudentOverviews: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students/overview`),
             /** Save the ranking of one course_date's students: `studentIds` in order, first = rank 1. Returns the re-ranked roster. Ids not enrolled → 422. */
             rankCourseDateStudents: (courseDateId, studentIds) => this.#client.put(`${base}/course-dates/${courseDateId}/students/ranking`, { student_ids: studentIds }),
             /** Mark a student's attendance on any teacher's session. */

@@ -56,6 +56,8 @@ export default class Teacher {
             courseDateSessions: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/sessions`),
             /** Enrolled roster ({id, name, email, rank}, ranked first — unranked last) for one CourseDate, read straight off enrollment — shows up even before any session has been synced. Read-only: does not move students between dates. */
             courseDateStudents: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students`),
+            /** Per-student progress for one CourseDate, keyed by student id: `quiz_progress` {approved, taken, total, percentage}, `level_exams` (each level's last quiz: status not_taken|pending|approved|failed|none) and `next_course` {exists, purchased, pending_payment}. Course quiz structure is cached server-side per course. */
+            courseDateStudentOverviews: (courseDateId) => this.#client.get(`${base}/course-dates/${courseDateId}/students/overview`),
             /** Save the teacher's ranking of one CourseDate's students: `studentIds` in order, first = rank 1. Returns the re-ranked roster ({id, name, email, rank}). Ids not enrolled → 422. */
             rankCourseDateStudents: (courseDateId, studentIds) => this.#client.put(`${base}/course-dates/${courseDateId}/students/ranking`, { student_ids: studentIds }),
             /** One student's quiz attempts in this CourseDate's course, every one of them - not just needs_teacher_correction=1 (auto-graded ones never show up in the "Quizzes por corregir" surfaces below). Each row carries `quiz.needs_teacher_correction`, `level`/`lesson`, `final_score_percentage`; filter by level/lesson client-side. */
