@@ -40,6 +40,13 @@ export default class Users {
         };
     }
 
+    /**
+     * Direct link to the user's "constancia de estudios" PDF (a download, not a fetch: open/href this URL, same as
+     * payments().invoiceUrl()). Only works while the user has a course date that is current (403 otherwise) and an
+     * ID number on file (422 otherwise). Self or staff.
+     */
+    studyStatementUrl(userId) { return `${this.#client.baseUrl}/users/${userId}/study-statement`; }
+
     courses(userId) {
         const base   = `/users/${userId}/courses`;
         const client = this.#client;
