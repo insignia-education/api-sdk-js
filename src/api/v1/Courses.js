@@ -53,9 +53,14 @@ export default class Courses {
             get:    (id = null) => id ? this.#client.get(`${base}/${id}`) : this.#client.get(base),
             /** Public dates list with enrollment counts, for the public course page. */
             getPublic: () => this.#client.get(`${base}/public`),
+            /** `data` may carry `children`: [{course_id, starts_at, ends_at}] — the reviewed follow-up dates (see childrenPreview()), created in the same call, linked to this date via parent_course_date_id, copying its teacher/config set/min+max students (no Telegram). */
             create: (data)      => this.#client.put(base, data),
             edit:   (id, data)  => this.#client.patch(`${base}/${id}`, data),
             delete: (id)        => this.#client.del(`${base}/${id}`),
+            /** Read-only plan of the dates of every course that follows this one (courses.prerequisite chain): [{course_id, course_title, previous_course_id, starts_at, ends_at, existing_child_id}]. Each course lasts as long as the first date and starts the Monday after a week off. Nothing is saved. `parentId` marks courses that already have a child under that date. */
+            childrenPreview: ({ starts_at, ends_at, parent_id = null }) => this.#client.post(`${base}/children-preview`, { starts_at, ends_at, parent_id }),
+            /** Creates the reviewed follow-up dates ([{course_id, starts_at, ends_at}]) under an already-saved date; courses that already have a child of it are skipped. */
+            createChildren: (id, children) => this.#client.post(`${base}/${id}/children`, { children }),
             /** Soft-deleted dates for this course, most recently deleted first — the "Deleted" tab, for undoing a mistaken delete(). */
             trashed: () => this.#client.get(`${base}/trashed`),
             /** Undoes delete() — brings a soft-deleted date back into the normal list. */
