@@ -26,4 +26,22 @@ export default class Sales {
 
     /** Course dates starting within the current calendar week (Mon–Sun). */
     coursesStartingThisWeek() { return this.#client.get('/sales/courses/starting-this-week'); }
+
+    /**
+     * Read-only course-date views for the Sales "Course dates" tab — same payloads as the matching
+     * Employee.dashboard() methods, minus every write action (ranking, attendance, grading, teacher changes).
+     */
+    courseDates() {
+        const base = '/sales/course-dates';
+        return {
+            /** All sessions of a course date, each with its student roster ({id, name, email, username, present}). */
+            sessions: (courseDateId) => this.#client.get(`${base}/${courseDateId}/sessions`),
+            /** Ranked roster ({id, name, email, username, rank}). */
+            students: (courseDateId) => this.#client.get(`${base}/${courseDateId}/students`),
+            /** Per-student progress keyed by student id (quiz_progress, level_exams, next_course). */
+            studentOverviews: (courseDateId) => this.#client.get(`${base}/${courseDateId}/students/overview`),
+            /** One enrolled student's quiz attempts in the course date's course. */
+            studentQuizzes: (courseDateId, studentId) => this.#client.get(`${base}/${courseDateId}/students/${studentId}/quizzes`),
+        };
+    }
 }
