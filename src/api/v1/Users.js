@@ -43,9 +43,13 @@ export default class Users {
     /**
      * Direct link to the user's "constancia de estudios" PDF (a download, not a fetch: open/href this URL, same as
      * payments().invoiceUrl()). Only works while the user has a course date that is current (403 otherwise) and an
-     * ID number on file (422 otherwise). Self or staff.
+     * ID number on file (422 otherwise). Self or staff. `receiver` is the addressee line of the letter's header
+     * (max 120 chars; empty/omitted = "A quien pueda interesar").
      */
-    studyStatementUrl(userId) { return `${this.#client.baseUrl}/users/${userId}/study-statement`; }
+    studyStatementUrl(userId, receiver = null) {
+        const url = `${this.#client.baseUrl}/users/${userId}/study-statement`;
+        return receiver ? `${url}?receiver=${encodeURIComponent(receiver)}` : url;
+    }
 
     courses(userId) {
         const base   = `/users/${userId}/courses`;
