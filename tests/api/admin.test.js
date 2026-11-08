@@ -23,6 +23,28 @@ describe('Admin quizzesUngraded', () => {
     });
 });
 
+describe('Admin courseDates', () => {
+    test('passes the from/to range and pagination through', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
+        const admin = new Admin(client);
+
+        await admin.courseDates({ page: 1, perPage: 500, from: '2026-01-01', to: '2026-03-31' });
+        expect(client.get).toHaveBeenCalledWith('/admin/courses/current-dates', {
+            page: 1, per_page: 500, from: '2026-01-01', to: '2026-03-31',
+        });
+    });
+
+    test('omits the range when not given', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ data: [] }) };
+        const admin = new Admin(client);
+
+        await admin.courseDates();
+        expect(client.get).toHaveBeenCalledWith('/admin/courses/current-dates', {
+            page: undefined, per_page: undefined, from: undefined, to: undefined,
+        });
+    });
+});
+
 describe('Admin GitHub pull request methods', () => {
     test('fetches pull request review context', async () => {
         const client = { get: jest.fn().mockResolvedValue({ number: 104 }) };

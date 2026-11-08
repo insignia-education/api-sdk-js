@@ -5,9 +5,13 @@ export default class Admin {
         this.#client = client;
     }
 
-    /** Paginated list of courses with their currently-active course_dates. */
-    courseDates({ page, perPage } = {}) {
-        return this.#client.get('/admin/courses/current-dates', { page, per_page: perPage });
+    /**
+     * Paginated list of course_dates with their course and teacher. Defaults to those active
+     * within today ±30 days; `from`/`to` (Y-m-d) override either bound so callers can reach
+     * further back (e.g. the "Past" tab). A date matches when its span overlaps the range.
+     */
+    courseDates({ page, perPage, from, to } = {}) {
+        return this.#client.get('/admin/courses/current-dates', { page, per_page: perPage, from, to });
     }
 
     /**
