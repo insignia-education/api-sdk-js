@@ -79,6 +79,13 @@ export default class Admin {
         });
     }
 
+    /** Google Analytics 4 traffic grouped by one `dimension` ('date' | 'channel' | 'source' | 'page' | 'landing_page' | 'country' | 'device') — `{ available, property, dimension, from, to, totals: { sessions, activeUsers, newUsers, engagementRate }, rows: [{ key, sessions, activeUsers, newUsers, engagementRate }] }` (`engagementRate` is 0-1). `fromDate`/`toDate` are `YYYY-MM-DD` (default: the last 28 days ending yesterday). `limit` 1-100 rows (default 25; ignored for 'date'). Only counts visitors who accepted cookies (the site loads GA after consent). Cached by the API for the rest of the day — `refresh: true` bypasses that. Resolves `{ available: false }` (not an error) when Google isn't configured or can't be reached. Admin-only. */
+    analyticsReport({ dimension, fromDate, toDate, limit, refresh } = {}) {
+        return this.#client.get('/admin/analytics/report', {
+            dimension, from_date: fromDate, to_date: toDate, limit, refresh: refresh ? 1 : undefined,
+        });
+    }
+
     /** Both rotating PayPal accounts' real available balance, keyed "1"/"2". Each resolves `{ available: false }` (not an error) if that account's "Transaction Search" feature isn't enabled in PayPal's dashboard yet. */
     statisticsPaypalBalance({ currency } = {}) {
         return this.#client.get('/admin/statistics/paypal-balance', { currency });
