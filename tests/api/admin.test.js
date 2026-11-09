@@ -129,3 +129,35 @@ describe('Admin sales-by-seller report', () => {
         expect(url).toContain('from_date=2026-10-01');
     });
 });
+
+describe('Admin searchConsoleReport', () => {
+    test('passes the dimension, range, brand filter and limit through', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ available: true }) };
+        const admin = new Admin(client);
+
+        await expect(admin.searchConsoleReport({
+            dimension: 'query', fromDate: '2026-10-01', toDate: '2026-10-28', brand: 'exclude', limit: 50,
+        })).resolves.toEqual({ available: true });
+        expect(client.get).toHaveBeenCalledWith('/admin/search-console/report', {
+            dimension: 'query', from_date: '2026-10-01', to_date: '2026-10-28', brand: 'exclude', limit: 50, refresh: undefined,
+        });
+    });
+
+    test('sends refresh=1 only when asked to bypass the daily cache', async () => {
+        const client = { get: jest.fn().mockResolvedValue({}) };
+        const admin = new Admin(client);
+
+        await admin.searchConsoleReport({ dimension: 'page', refresh: true });
+        expect(client.get).toHaveBeenCalledWith('/admin/search-console/report', expect.objectContaining({ dimension: 'page', refresh: 1 }));
+    });
+
+    test('omits optional params when not given', async () => {
+        const client = { get: jest.fn().mockResolvedValue({}) };
+        const admin = new Admin(client);
+
+        await admin.searchConsoleReport({ dimension: 'date' });
+        expect(client.get).toHaveBeenCalledWith('/admin/search-console/report', {
+            dimension: 'date', from_date: undefined, to_date: undefined, brand: undefined, limit: undefined, refresh: undefined,
+        });
+    });
+});
