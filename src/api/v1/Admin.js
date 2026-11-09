@@ -72,6 +72,13 @@ export default class Admin {
         return this.#client.get('/admin/statistics/aws-costs', { from_date: fromDate, to_date: toDate });
     }
 
+    /** Google Search Console performance grouped by one `dimension` ('date' | 'query' | 'page' | 'country' | 'device') — `{ available, site, dimension, from, to, brand, totals: { clicks, impressions, ctr, position }, rows: [{ key, clicks, impressions, ctr, position }] }`. `fromDate`/`toDate` are `YYYY-MM-DD` (default: the last 28 days ending 2 days ago, Search Console's data lag). `brand`: 'all' (default) | 'exclude' (queries NOT containing the brand term, i.e. non-brand search) | 'only'. `limit` 1-100 rows (default 25; ignored for 'date'). Cached by the API for the rest of the day — `refresh: true` bypasses that. Resolves `{ available: false }` (not an error) when Google isn't configured or can't be reached. Admin-only. */
+    searchConsoleReport({ dimension, fromDate, toDate, brand, limit, refresh } = {}) {
+        return this.#client.get('/admin/search-console/report', {
+            dimension, from_date: fromDate, to_date: toDate, brand, limit, refresh: refresh ? 1 : undefined,
+        });
+    }
+
     /** Both rotating PayPal accounts' real available balance, keyed "1"/"2". Each resolves `{ available: false }` (not an error) if that account's "Transaction Search" feature isn't enabled in PayPal's dashboard yet. */
     statisticsPaypalBalance({ currency } = {}) {
         return this.#client.get('/admin/statistics/paypal-balance', { currency });
