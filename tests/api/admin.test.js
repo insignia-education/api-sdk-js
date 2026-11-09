@@ -161,3 +161,35 @@ describe('Admin searchConsoleReport', () => {
         });
     });
 });
+
+describe('Admin analyticsReport', () => {
+    test('passes the dimension, range and limit through', async () => {
+        const client = { get: jest.fn().mockResolvedValue({ available: true }) };
+        const admin = new Admin(client);
+
+        await expect(admin.analyticsReport({
+            dimension: 'channel', fromDate: '2026-10-01', toDate: '2026-10-28', limit: 50,
+        })).resolves.toEqual({ available: true });
+        expect(client.get).toHaveBeenCalledWith('/admin/analytics/report', {
+            dimension: 'channel', from_date: '2026-10-01', to_date: '2026-10-28', limit: 50, refresh: undefined,
+        });
+    });
+
+    test('sends refresh=1 only when asked to bypass the daily cache', async () => {
+        const client = { get: jest.fn().mockResolvedValue({}) };
+        const admin = new Admin(client);
+
+        await admin.analyticsReport({ dimension: 'page', refresh: true });
+        expect(client.get).toHaveBeenCalledWith('/admin/analytics/report', expect.objectContaining({ dimension: 'page', refresh: 1 }));
+    });
+
+    test('omits optional params when not given', async () => {
+        const client = { get: jest.fn().mockResolvedValue({}) };
+        const admin = new Admin(client);
+
+        await admin.analyticsReport({ dimension: 'date' });
+        expect(client.get).toHaveBeenCalledWith('/admin/analytics/report', {
+            dimension: 'date', from_date: undefined, to_date: undefined, limit: undefined, refresh: undefined,
+        });
+    });
+});
