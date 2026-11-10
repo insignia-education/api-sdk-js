@@ -2,10 +2,13 @@ name: Dependabot auto-merge
 
 # Squash-merges Dependabot PRs for patch and minor updates as soon as they merge clean.
 # Major updates are left open for a human. There is no PR test workflow in this repo, so nothing gates
-# this beyond mergeability. A merge made with GITHUB_TOKEN does not trigger other workflows: the deploy
+# this beyond mergeability. Only PRs into master trigger it: the "Sync beta with master" PR is merged within
+# seconds of opening, so a run on it starts against an already-merged PR and fails with "workflow file issue". A merge made with GITHUB_TOKEN does not trigger other workflows: the deploy
 # and the master -> beta sync only run on the next normal push to master.
 
-on: pull_request
+on:
+  pull_request:
+    branches: [master]
 
 permissions:
   contents: write
