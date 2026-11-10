@@ -8,6 +8,7 @@ import Changelogs from './Changelogs.js';
 import CompanySalesGoals from './CompanySalesGoals.js';
 import CompanyCelebrations from './CompanyCelebrations.js';
 import CompanySettings from './CompanySettings.js';
+import SeoPages from './SeoPages.js';
 import ContactForms from './ContactForms.js';
 import ContactTypes from './ContactTypes.js';
 import ConversationalTopics from './ConversationalTopics.js';
@@ -70,6 +71,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.companySalesGoals    = new CompanySalesGoals(this);
         this.companyCelebrations  = new CompanyCelebrations(this);
         this.companySettings      = new CompanySettings(this);
+        this.seoPages             = new SeoPages(this);
         this.contactForms         = new ContactForms(this);
         this.contactTypes         = new ContactTypes(this);
         this.conversationalTopics = new ConversationalTopics(this);
