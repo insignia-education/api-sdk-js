@@ -197,6 +197,23 @@ export default class Admin {
         });
     }
 
+    /** Students per "days since last verified payment" bucket (0-30, 31-90, 91-180, 181-365, 365+): { total, categories: [{ category, students, percent }] }. */
+    reportsLapsedStudentsStats() { return this.#client.get('/admin/reports/lapsed-students/stats'); }
+
+    /** Paginated lapsed-students lead list (contact data, last payment, days since, category). `category` is one of the stats buckets; `search` matches name/username/email/phone. */
+    reportsLapsedStudents({ category, courseId, search, page, perPage } = {}) {
+        return this.#client.get('/admin/reports/lapsed-students', {
+            category, course_id: courseId, search, page, per_page: perPage,
+        });
+    }
+
+    /** Direct download link for the lapsed-students report (format: 'csv' | 'xlsx'). */
+    reportsLapsedStudentsExportUrl({ category, courseId, search, format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/reports/lapsed-students/export', {
+            category, course_id: courseId, search, format,
+        });
+    }
+
     /** Paginated per-teacher report for a date range: hours given, sessions given, absences (substituted out) and substitutions (covered for someone else). */
     reportsTeacherStats({ fromDate, toDate, page, perPage } = {}) {
         return this.#client.get('/admin/reports/teacher-stats', {
