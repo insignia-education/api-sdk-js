@@ -193,3 +193,27 @@ describe('Admin analyticsReport', () => {
         });
     });
 });
+
+describe('Admin lapsed-students report', () => {
+    test('stats and list hit the report routes with snake_case filters', async () => {
+        const client = { get: jest.fn().mockResolvedValue({}) };
+        const admin = new Admin(client);
+
+        await admin.reportsLapsedStudentsStats();
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/lapsed-students/stats');
+
+        await admin.reportsLapsedStudents({ category: '365+', courseId: 3, search: 'ana', page: 2, perPage: 50 });
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/lapsed-students', {
+            category: '365+', course_id: 3, search: 'ana', page: 2, per_page: 50,
+        });
+    });
+
+    test('export url carries the filters and format', () => {
+        const admin = new Admin({ baseUrl: 'https://api.test/api/v1' });
+
+        const url = admin.reportsLapsedStudentsExportUrl({ category: '0-30', format: 'xlsx' });
+        expect(url).toContain('/admin/reports/lapsed-students/export');
+        expect(url).toContain('category=0-30');
+        expect(url).toContain('format=xlsx');
+    });
+});
