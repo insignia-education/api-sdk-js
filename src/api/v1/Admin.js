@@ -214,6 +214,23 @@ export default class Admin {
         });
     }
 
+    /** Active students (last verified payment <= 90 days old AND activity in the last 30 days) per "days since last activity" bucket (0-7, 8-14, 15-30): { total, categories: [{ category, students, percent }] }. */
+    reportsActiveStudentsStats() { return this.#client.get('/admin/reports/active-students/stats'); }
+
+    /** Paginated active-students list (contact data, last activity, current course, last payment). `category` is one of the stats buckets; `search` matches name/username/email/phone. */
+    reportsActiveStudents({ category, courseId, search, page, perPage } = {}) {
+        return this.#client.get('/admin/reports/active-students', {
+            category, course_id: courseId, search, page, per_page: perPage,
+        });
+    }
+
+    /** Direct download link for the active-students report (format: 'csv' | 'xlsx'). */
+    reportsActiveStudentsExportUrl({ category, courseId, search, format = 'csv' } = {}) {
+        return Admin.#buildUrl(this.#client.baseUrl, '/admin/reports/active-students/export', {
+            category, course_id: courseId, search, format,
+        });
+    }
+
     /** Paginated per-teacher report for a date range: hours given, sessions given, absences (substituted out) and substitutions (covered for someone else). */
     reportsTeacherStats({ fromDate, toDate, page, perPage } = {}) {
         return this.#client.get('/admin/reports/teacher-stats', {
