@@ -217,3 +217,27 @@ describe('Admin lapsed-students report', () => {
         expect(url).toContain('format=xlsx');
     });
 });
+
+describe('Admin active-students report', () => {
+    test('stats and list hit the report routes with snake_case filters', async () => {
+        const client = { get: jest.fn().mockResolvedValue({}) };
+        const admin = new Admin(client);
+
+        await admin.reportsActiveStudentsStats();
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/active-students/stats');
+
+        await admin.reportsActiveStudents({ category: '0-7', courseId: 3, search: 'ana', page: 2, perPage: 50 });
+        expect(client.get).toHaveBeenCalledWith('/admin/reports/active-students', {
+            category: '0-7', course_id: 3, search: 'ana', page: 2, per_page: 50,
+        });
+    });
+
+    test('export url carries the filters and format', () => {
+        const admin = new Admin({ baseUrl: 'https://api.test/api/v1' });
+
+        const url = admin.reportsActiveStudentsExportUrl({ category: '8-14', format: 'xlsx' });
+        expect(url).toContain('/admin/reports/active-students/export');
+        expect(url).toContain('category=8-14');
+        expect(url).toContain('format=xlsx');
+    });
+});
