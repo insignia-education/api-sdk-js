@@ -53,6 +53,11 @@ export default class Courses {
             get:    (id = null) => id ? this.#client.get(`${base}/${id}`) : this.#client.get(base),
             /** Public dates list with enrollment counts, for the public course page. */
             getPublic: () => this.#client.get(`${base}/public`),
+            /** Premiums offered on one date. `set(premiumIds)` replaces the whole set; only premiums of this course with a non-individual sessions item are accepted (422 `course_premiums.dates_not_allowed` / `premium_not_in_course`). */
+            premiums: (dateId) => ({
+                get: () => this.#client.get(`${base}/${dateId}/premiums`),
+                set: (premiumIds) => this.#client.put(`${base}/${dateId}/premiums`, { premium_ids: premiumIds }),
+            }),
             /** `data` may carry `children`: [{course_id, starts_at, ends_at}] — the reviewed follow-up dates (see childrenPreview()), created in the same call, linked to this date via parent_course_date_id, copying its teacher/config set/min+max students (no Telegram). */
             create: (data)      => this.#client.put(base, data),
             edit:   (id, data)  => this.#client.patch(`${base}/${id}`, data),
@@ -104,6 +109,11 @@ export default class Courses {
             create: (data)      => client.put(base, data),
             edit:   (id, data)  => client.patch(`${base}/${id}`, data),
             delete: (id)        => client.del(`${base}/${id}`),
+            /** Dates one premium is offered on. `set(dateIds)` replaces the whole set; the premium must have a non-individual sessions item to take any (422 `course_premiums.dates_not_allowed` / `date_not_in_course`). */
+            dates:  (premiumId) => ({
+                get: () => client.get(`${base}/${premiumId}/dates`),
+                set: (dateIds) => client.put(`${base}/${premiumId}/dates`, { date_ids: dateIds }),
+            }),
             items:  (premiumId) => {
                 const iBase = `${base}/${premiumId}/items`;
                 return {
