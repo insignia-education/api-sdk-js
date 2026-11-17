@@ -3,6 +3,7 @@ import AiGradingSettings from './AiGradingSettings.js';
 import Admin from './Admin.js';
 import Auth from './Auth.js';
 import Accounts from './Accounts.js';
+import Analytics from './Analytics.js';
 import Certificates from './Certificates.js';
 import Changelogs from './Changelogs.js';
 import CompanySalesGoals from './CompanySalesGoals.js';
@@ -66,6 +67,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.admin                = new Admin(this);
         this.auth                 = new Auth(this);
         this.accounts             = new Accounts(this);
+        this.analytics            = new Analytics(this);
         this.certificates         = new Certificates(this);
         this.changelogs           = new Changelogs(this);
         this.companySalesGoals    = new CompanySalesGoals(this);

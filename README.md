@@ -133,6 +133,13 @@ await v1.configs.edit(1, data);
 await v1.configs.delete(1);
 ```
 
+### Analytics (public, cookie-less visit log)
+
+```js
+await v1.analytics.view({ landingId, source: 'site', path: '/es/courses', title, referrer, utm: { source: 'newsletter' }, language, screenWidth, screenHeight });
+await v1.analytics.consent({ landingId, source: 'site', consent: 'accepted', path: '/es/courses' });
+```
+
 ### Contact Forms
 
 ```js
