@@ -35,6 +35,13 @@ export default class Employee {
             /** Reassign a single session's teacher (not the whole course_date — that's a course-config action). */
             changeSessionTeacher: (sessionId, teacherId) =>
                 this.#client.patch(`${base}/sessions/${sessionId}/teacher`, { teacher_id: teacherId }),
+            /**
+             * Reschedule a session's whole meeting (every session row sharing its Zoom meeting): new teacher, date and/or time.
+             * Deletes the old Zoom meeting, creates a new one, re-arms the reminders and notifies every student and the teacher(s).
+             * Employees and above only. `teacherId` optional, `date` is "YYYY-MM-DD", `time` is "HH:mm"; at least one must differ. Returns `{ sessions, meeting_created }`.
+             */
+            rescheduleSession: (sessionId, { teacherId, date, time } = {}) =>
+                this.#client.patch(`${base}/sessions/${sessionId}/reschedule`, { teacher_id: teacherId, date, time }),
             /** Freeform Zoom meeting for the requesting employee (no course, no student roster). time is "HH:mm". */
             createCustomMeeting: (topic, date, time, duration) =>
                 this.#client.post(`${base}/custom-meeting`, { topic, date, time, duration }),
