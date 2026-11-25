@@ -30,6 +30,7 @@ import Blocks from './Blocks.js';
 import BugReports from './BugReports.js';
 import MailBlacklist from './MailBlacklist.js';
 import MailingLists from './MailingLists.js';
+import Ads from './Ads.js';
 import Offers from './Offers.js';
 import Organizations from './Organizations.js';
 import PaymentMethods from './PaymentMethods.js';
@@ -93,6 +94,7 @@ export default class InsigniaApiV1 extends InsigniaApi {
         this.blocks               = new Blocks(this);
         this.bugReports           = new BugReports(this);
         this.mailingLists         = new MailingLists(this);
+        this.ads                  = new Ads(this);
         this.offers               = new Offers(this);
         this.organizations        = new Organizations(this);
         this.paymentMethods       = new PaymentMethods(this);

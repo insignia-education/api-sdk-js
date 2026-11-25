@@ -141,6 +141,8 @@ export default class Courses {
                     create: (data)      => client.put(lBase, data),
                     edit:   (id, data)  => client.patch(`${lBase}/${id}`, data),
                     delete: (id)        => client.del(`${lBase}/${id}`),
+                    /** Player: the ad to show after this lesson in `language` ('es'|'en'|'pt') — `{ ad: null | { id, title, link, media: { type, url } } }`. Counts as one view. */
+                    serveAd: (lessonId, language) => client.post(`${lBase}/${lessonId}/ad`, { language }),
                     materials: (lessonId) => {
                         const mBase = `${lBase}/${lessonId}/materials`;
                         return {
